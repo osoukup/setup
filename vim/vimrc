@@ -1,0 +1,61 @@
+" vim config
+" comment
+"
+" no vi compatibility even whet config used another than .vimrc way
+set nocompatible
+
+" syntax highlight
+syntax on
+" file type detection and type plugin and indention file loading
+filetype indent plugin on
+
+" line numbers on
+set number
+
+" line wrapping off
+" do not cut long lines
+set nowrap
+
+" scroll offset
+" cursor verticaly centered
+set scrolloff=999
+
+" replace tab with spaces
+set tabstop=4 shiftwidth=4 expandtab
+
+" keyboard remapping
+" shift arrows
+noremap ů l
+noremap l k
+noremap k j
+noremap j h
+noremap h ů
+" shift window movement
+noremap <c-w>ů <c-w>l
+noremap <c-w>l <c-w>k
+noremap <c-w>k <c-w>j
+noremap <c-w>j <c-w>h
+noremap <c-w>h <c-w>ů
+
+" remap leader key from \
+let mapleader="h"
+
+" search for word under cursor
+" <cword> stands for current word
+" <bar> stands for vertical bar separator
+map <leader>s :execute "vimgrep /" . expand("<cword>") . "/j **" <bar> cw<CR>
+
+" PLUGINS
+"
+" pathogen : plugin manager
+execute pathogen#infect()
+
+" NERDTree
+autocmd vimenter * NERDTree
+autocmd vimenter * wincmd l
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+" vim-autoflake
+let g:autoflake_remove_all_unused_imports=1
+let g:autoflake_remove_unused_variables=1
