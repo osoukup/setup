@@ -62,5 +62,8 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 let g:autoflake_remove_all_unused_imports=1
 let g:autoflake_remove_unused_variables=1
 
+" vim-flake8
+autocmd FileType python map <buffer> <leader>f :call flake8#Flake8()<CR>
+
 " vim-ctrlp
 let g:ctrlp_custom_ignore = 'flask\|node_modules\|venv'
