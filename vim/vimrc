@@ -44,6 +44,8 @@ let mapleader="h"
 " <cword> stands for current word
 " <bar> stands for vertical bar separator
 map <leader>s :execute "vimgrep /" . expand("<cword>") . "/j **" <bar> cw<CR>
+" however ignore useless directories
+:set wildignore+=flask/**,**node_modules/**,venv/**
 
 " PLUGINS
 "
@@ -59,3 +61,6 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 " vim-autoflake
 let g:autoflake_remove_all_unused_imports=1
 let g:autoflake_remove_unused_variables=1
+
+" vim-ctrlp
+let g:ctrlp_custom_ignore = 'flask\|node_modules\|venv'
