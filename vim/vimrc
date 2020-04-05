@@ -42,6 +42,9 @@ noremap <c-w>h <c-w>ů
 " remap leader key from \
 let mapleader="h"
 
+" system clipboard yank
+vnoremap <leader>y "+y
+
 " search for word under cursor
 " <cword> stands for current word
 " <bar> stands for vertical bar separator
