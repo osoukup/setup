@@ -4,6 +4,8 @@
 " no vi compatibility even whet config used another than .vimrc way
 set nocompatible
 
+" search highlight
+highlight Search cterm=NONE ctermfg=darkgreen ctermbg=yellow
 " syntax highlight
 syntax on
 " file type detection and type plugin and indention file loading
