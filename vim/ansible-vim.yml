@@ -1,0 +1,48 @@
+# vim install and setup playbook
+#
+# * setup ~/.ssh/auto-install-key
+# * define user variable as argument
+#
+#   ansible-vim.yml -e "user=vagrant"
+---
+- name: vim setup
+  hosts: localhost
+  gather_facts: false
+  become: true
+  tasks:
+      - name: check mandatory variables are defined
+        assert:
+            that:
+                - user is defined
+
+      - name: install gvim
+        yum:
+            name: gvim
+            state: present
+
+      - name: alias vi to vimx
+        lineinfile:
+            path: /home/{{ user }}/.bashrc
+            line: 'alias vi="vimx"'
+            create: yes
+
+      - name: alias vim to vimx
+        lineinfile:
+            path: /home/{{ user }}/.bashrc
+            line: 'alias vim="vimx"'
+            create: yes
+
+      - name: clone vim setup git repo
+        git:
+            repo: git@github.com:osoukup/setup.git
+            dest: /home/{{ user }}/osoukup/setup
+            accept_hostkey: yes
+            key_file: /home/{{ user }}/.ssh/auto-install-key
+        become: yes
+        become_user: "{{ user }}"
+
+      - name: setup vim
+        shell:
+            cmd: /home/{{ user }}/osoukup/setup/vim/setup-vim.sh -s -d /home/{{ user }}/osoukup/setup/vim
+        become: yes
+        become_user: "{{ user }}"
