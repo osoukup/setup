@@ -3,7 +3,33 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-if [[ $1 != "-s" ]]; then
+while getopts ":d:hs" opt; do
+    case ${opt} in
+        d)
+            DIR="$OPTARG"
+            ;;
+        h)
+            echo "$0 [-d dir][-h][-s]"
+            echo "   -d   set source directory"
+            echo "   -h   print help"
+            echo "   -s   setup only (no install)"
+            exit 0
+            ;;
+        s)
+            setup_only=true
+            ;;
+        \?)
+            echo "invalid option -$OPTARG" 1>&2
+            exit 1
+            ;;
+        :)
+            echo "missing argument of option -$OPTARG" 1>&2
+            exit 1
+            ;;
+    esac
+done
+
+if [[ -z "$setup_only" ]]; then
     sudo yum install git -y
     sudo yum install vim -y
 fi
