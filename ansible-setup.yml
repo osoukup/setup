@@ -1,0 +1,73 @@
+# system setup playbook
+#
+# * define user variable as argument
+#
+#   ansible-setup.yml -e "user=vagrant"
+---
+- name: system setup
+  hosts: localhost
+  gather_facts: false
+  become: true
+  tasks:
+    - name: check mandatory variables are defined
+      assert:
+        that:
+          - user is defined
+
+    # tmux setup
+    - name: install tmux
+      yum:
+        name: tmux
+        state: present
+    - name: setup tmux attach shurtcut alias
+      lineinfile:
+        path: "/home/{{ user }}/.bashrc"
+        line: 'alias ta="tmux attach -t"'
+        create: yes
+    - name: setup tmux list shurtcut alias
+      lineinfile:
+        path: "/home/{{ user }}/.bashrc"
+        line: 'alias tl="tmux ls"'
+        create: yes
+    - name: setup tmux new shurtcut alias
+      lineinfile:
+        path: "/home/{{ user }}/.bashrc"
+        line: 'alias tn="tmux new -s"'
+        create: yes
+    - name: setup tmux plugin manager
+      git:
+        repo: "https://github.com/tmux-plugins/tpm.git"
+        dest: "/home/{{ user }}/.tmux/plugins/tpm"
+      become: yes
+      become_user: "{{ user }}"
+    - name: get new tmux config stats
+      stat:
+        path: "/home/{{ user }}/data/config/dot-tmux.conf"
+      register: new_tmux_conf
+    - name: setup tmux config
+      block:
+        # check tmux config is symlink and remove if not
+        # otherwise SELinux prevents creating symlink from file
+        - name: get old tmux config stats
+          stat:
+            path: "/home/{{ user }}/.tmux.conf"
+          register: old_tmux_conf
+        - name: remove tmux old config if not symlink
+          file:
+            state: absent
+            path: "/home/{{ user }}/.tmux.conf"
+          when: >
+            old_tmux_conf.stat.exists == true and
+            ( old_tmux_conf.stat.islnk is not defined or old_tmux_conf.stat.islnk == false )
+        - name: symlink new tmux config
+          file:
+            src: "/home/{{ user }}/data/config/dot-tmux.conf"
+            dest: "/home/{{ user }}/.tmux.conf"
+            state: link
+          become_user: "{{ user }}"
+      when: new_tmux_conf.stat.exists == true
+
+- name: vim setup
+  import_playbook: vim/ansible-vim.yml
+  vars:
+    user: "{{ user }}"
