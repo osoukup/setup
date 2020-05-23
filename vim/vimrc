@@ -45,13 +45,6 @@ let mapleader="h"
 " system clipboard yank
 vnoremap <leader>y "+y
 
-" search for word under cursor
-" <cword> stands for current word
-" <bar> stands for vertical bar separator
-map <leader>s :execute "vimgrep /" . expand("<cword>") . "/j **" <bar> cw<CR>
-" however ignore useless directories
-:set wildignore+=flask/**,**node_modules/**,venv/**
-
 " PLUGINS
 "
 " pathogen : plugin manager
@@ -72,3 +65,13 @@ autocmd FileType python map <buffer> <leader>f :call flake8#Flake8()<CR>
 
 " vim-ctrlp
 let g:ctrlp_custom_ignore = 'flask\|node_modules\|venv'
+
+" PLUGINS OPTIONS REWRITE
+" this must be after plugins load to rewrite their options
+"
+" search for word under cursor
+" <cword> stands for current word
+" <bar> stands for vertical bar separator
+noremap <leader>s :execute "vimgrep /" . expand("<cword>") . "/j **" <bar> cw<CR>
+" however ignore useless directories
+:set wildignore+=flask/**,**node_modules/**,venv/**

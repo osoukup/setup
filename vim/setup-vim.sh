@@ -44,3 +44,6 @@ curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
 while read -r repo; do
     git clone --recursive "$repo" ~/.vim/bundle/"$( basename "$repo" | cut -d. -f1 )"
 done < "$DIR"/setup-vim.conf
+
+# substitute <leader>s for <leader>ds in jedi-vim so it does not mask search
+find ~/.vim/bundle/jedi-vim/ -type f -exec grep -l "<leader>s" {} ";" | xargs -n 1 sed -i "s/<leader>s/<leader>ds/g"
