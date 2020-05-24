@@ -18,21 +18,15 @@
       yum:
         name: tmux
         state: present
-    - name: setup tmux attach shortcut alias
-      lineinfile:
+    - name: setup tmux shortcut aliases
+      blockinfile:
         path: "/home/{{ user }}/.bashrc"
-        line: 'alias ta="tmux attach -t"'
-        create: yes
-    - name: setup tmux list shurtcut alias
-      lineinfile:
-        path: "/home/{{ user }}/.bashrc"
-        line: 'alias tl="tmux ls"'
-        create: yes
-    - name: setup tmux new shurtcut alias
-      lineinfile:
-        path: "/home/{{ user }}/.bashrc"
-        line: 'alias tn="tmux new -s"'
-        create: yes
+        marker: "# {mark} tmux ANSIBLE MANAGED BLOCK"
+        block: |
+          # tmux shortcuts
+          alias ta="tmux attach -t"
+          alias tl="tmux ls"
+          alias tn="tmux new -s"
     - name: setup tmux plugin manager
       git:
         repo: "https://github.com/tmux-plugins/tpm.git"

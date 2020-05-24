@@ -20,17 +20,14 @@
             name: gvim
             state: present
 
-      - name: alias vi to vimx
-        lineinfile:
-            path: /home/{{ user }}/.bashrc
-            line: 'alias vi="vimx"'
-            create: yes
-
-      - name: alias vim to vimx
-        lineinfile:
-            path: /home/{{ user }}/.bashrc
-            line: 'alias vim="vimx"'
-            create: yes
+      - name: setup vim aliases
+        blockinfile:
+          path: "/home/{{ user }}/.bashrc"
+          marker: "# {mark} vim ANSIBLE MANAGED BLOCK"
+          block: |
+            # gvim as default
+            alias vi="vimx"
+            alias vim="vimx"
 
       - name: clone vim setup git repo
         git:
