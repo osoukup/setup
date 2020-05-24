@@ -1,0 +1,58 @@
+# ranger setup playbook
+#
+# * define user variable as argument
+#
+#   ansible-ranger.yml -e "user=vagrant"
+---
+- name: ranger setup
+  hosts: localhost
+  gather_facts: false
+  become: true
+  tasks:
+    - name: check mandatory variables are defined
+      assert:
+        that:
+          - user is defined
+
+    - name: install ranger
+      yum:
+        name: ranger
+        state: present
+    - name: setup ranger shortcut alias
+      blockinfile:
+        path: "/home/{{ user }}/.bashrc"
+        marker: "# {mark} ranger ANSIBLE MANAGED BLOCK"
+        block: |
+          # ranger shortcut
+          alias r="ranger"
+    - name: create ~/.config/ranger
+      file:
+        path: "/home/{{ user }}/.config/ranger"
+        state: directory
+      become_user: "{{ user }}"
+    - name: get new ranger config stats
+      stat:
+        path: "/home/{{ user }}/data/config/rc.conf"
+      register: new_ranger_conf
+    - name: setup ranger config
+      block:
+        # check ranger config is symlink and remove if not
+        # otherwise SELinux prevents creating symlink from file
+        - name: get old ranger config stats
+          stat:
+            path: "/home/{{ user }}/.config/ranger/rc.conf"
+          register: old_ranger_conf
+        - name: remove ranger old config if not symlink
+          file:
+            state: absent
+            path: "/home/{{ user }}/.config/ranger/rc.conf"
+          when: >
+            old_ranger_conf.stat.exists == true and
+            ( old_ranger_conf.stat.islnk is not defined or old_ranger_conf.stat.islnk == false )
+        - name: symlink new ranger config
+          file:
+            src: "/home/{{ user }}/data/config/rc.conf"
+            dest: "/home/{{ user }}/.config/ranger/rc.conf"
+            state: link
+          become_user: "{{ user }}"
+      when: new_ranger_conf.stat.exists == true
