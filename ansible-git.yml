@@ -1,0 +1,137 @@
+# git setup playbook
+#
+# * define user variable as argument
+#
+#   ansible-git.yml -e "user=vagrant"
+---
+- name: git setup
+  hosts: localhost
+  gather_facts: false
+  become: true
+  tasks:
+    - name: check mandatory variables are defined
+      assert:
+        that:
+          - user is defined
+
+    - name: install git
+      yum:
+        name: git
+        state: present
+
+    - name: setup git stuff in .bashrc
+      blockinfile:
+        path: "/home/{{ user }}/.bashrc"
+        marker: "# {mark} git ANSIBLE MANAGED BLOCK"
+        block: |
+          # git-rebase-from tool
+          alias git-rebase-from="~/data/tools/git-rebase-from.sh"
+
+          # git branch in prompt
+          parse_git_branch() {
+               git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+          }
+          # PS1 is default promt format variable
+          # \u - user
+          # \w - working directory
+          export PS1="\u@ \[\033[32m\]\w\[\033[33m\]\$(parse_git_branch)\[\033[00m\] $ "
+
+    - name: get new git config stats
+      stat:
+        path: "/home/{{ user }}/data/config/dot-gitconfig"
+      register: new_gitconfig
+    - name: setup git config
+      when: new_gitconfig.stat.exists == true
+      block:
+        # check git config is symlink and remove if not
+        # otherwise SELinux prevents creating symlink from file
+        - name: get old git config stats
+          stat:
+            path: "/home/{{ user }}/.gitconfig"
+          register: old_gitconfig
+        - name: remove old git config if not symlink
+          file:
+            state: absent
+            path: "/home/{{ user }}/.gitconfig"
+          when: >
+            old_gitconfig.stat.exists == true and
+            ( old_gitconfig.stat.islnk is not defined or old_gitconfig.stat.islnk == false )
+        - name: symlink new git config
+          file:
+            src: "/home/{{ user }}/data/config/dot-gitconfig"
+            dest: "/home/{{ user }}/.gitconfig"
+            state: link
+          become_user: "{{ user }}"
+
+    - name: get new git ignore list stats
+      stat:
+        path: "/home/{{ user }}/data/config/dot-gitignore"
+      register: new_gitignore
+    - name: setup git ignore list
+      when: new_gitignore.stat.exists == true
+      block:
+        # check git ignore list is symlink and remove if not
+        # otherwise SELinux prevents creating symlink from file
+        - name: get old git ignore list stats
+          stat:
+            path: "/home/{{ user }}/.gitignore"
+          register: old_gitignore
+        - name: remove old git ignore list if not symlink
+          file:
+            state: absent
+            path: "/home/{{ user }}/.gitignore"
+          when: >
+            old_gitignore.stat.exists == true and
+            ( old_gitignore.stat.islnk is not defined or old_gitignore.stat.islnk == false )
+        - name: symlink new git ignore list
+          file:
+            src: "/home/{{ user }}/data/config/dot-gitignore"
+            dest: "/home/{{ user }}/.gitignore"
+            state: link
+          become_user: "{{ user }}"
+
+    - name: create osoukup GitHub repo directory
+      file:
+        path: "/home/{{ user }}/osoukup"
+        state: directory
+
+    - name: get auto-install-key stats
+      stat:
+        path: "/home/{{ user }}/.ssh/auto-install-key"
+      register: auto_install_key
+    # setup osoukup GitHub repositories if auto-install-key present
+    - name: setup osoukup GitHub repositories
+      when: auto_install_key.stat.exists == true
+      block:
+        - name: clone osoukup setup git repo
+          git:
+            repo: "git@github.com:osoukup/setup.git"
+            dest: "/home/{{ user }}/osoukup/setup"
+            accept_hostkey: yes
+            key_file: "/home/{{ user }}/.ssh/auto-install-key"
+          become: yes
+          become_user: "{{ user }}"
+        - name: setup osoukup setup repo .git/config
+          blockinfile:
+            path: "/home/{{ user }}/osoukup/setup/.git/config"
+            marker: "# {mark} git ANSIBLE MANAGED BLOCK"
+            block: |
+              [user]
+                  email = osoukup.mail@gmail.com
+                  name = osoukup
+        - name: clone osoukup ctrlp.vim git repo
+          git:
+            repo: "git@github.com:osoukup/ctrlp.vim.git"
+            dest: "/home/{{ user }}/osoukup/ctrlp.vim"
+            accept_hostkey: yes
+            key_file: "/home/{{ user }}/.ssh/auto-install-key"
+          become: yes
+          become_user: "{{ user }}"
+        - name: setup osoukup ctrlp.vim repo .git/config
+          blockinfile:
+            path: "/home/{{ user }}/osoukup/ctrlp.vim/.git/config"
+            marker: "# {mark} git ANSIBLE MANAGED BLOCK"
+            block: |
+              [user]
+                  email = osoukup.mail@gmail.com
+                  name = osoukup

@@ -44,6 +44,11 @@
         state: link
       become_user: "{{ user }}"
 
+- name: git setup
+  import_playbook: ansible-git.yml
+  vars:
+    user: "{{ user }}"
+
 - name: ranger setup
   import_playbook: ansible-ranger.yml
   vars:
