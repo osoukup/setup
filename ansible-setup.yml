@@ -64,6 +64,11 @@
         state: link
       become_user: "{{ user }}"
 
+- name: dir setup
+  import_playbook: ansible-dir.yml
+  vars:
+    user: "{{ user }}"
+
 - name: git setup
   import_playbook: ansible-git.yml
   vars:
