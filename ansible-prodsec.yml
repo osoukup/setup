@@ -1,0 +1,155 @@
+# RH PS work setup playbook
+#
+# * define user variable as argument
+#
+#   ansible-prodsec.yml -e "user=vagrant"
+---
+- name: prodsec setup
+  hosts: localhost
+  gather_facts: false
+  become: true
+  tasks:
+    - name: check mandatory variables are defined
+      assert:
+        that:
+          - user is defined
+
+    - name: create ~/prodsec
+      file:
+        path: "/home/{{ user }}/prodsec"
+        state: directory
+      become_user: "{{ user }}"
+    - name: create ~/prodsec-people
+      file:
+        path: "/home/{{ user }}/prodsec-people"
+        state: directory
+      become_user: "{{ user }}"
+
+    - name: setup prodsec aliases
+      blockinfile:
+        path: "/home/{{ user }}/.bashrc"
+        marker: "# {mark} prodsec ANSIBLE MANAGED BLOCK"
+        block: |
+          # sfm2 config file
+          export SFM2_SERVER_CONFIG=~/sfm2/instance/development.ini
+          # DevOps tools shortcuts
+          alias asm-source="source ~/prodsec/assembler/venv/bin/activate"
+          alias sfm2-db="sqlitebrowser ~/sfm2/instance/sfm2-database.sqlite"
+          alias sfm2-db-clear="rm ~/sfm2/instance/sfm2-database.sqlite"
+          alias sfm2-shell="(sfm2-source && python ~/sfm2/sfm2/shell.py)"
+          alias sfm2-source="source ~/sfm2/venv/bin/activate ; source ~/sfm2/cli/sfm2-completion.bash"
+          alias sfm2-activate="~/data/tools/sfm2-activate.sh"
+          alias sfm2-deactivate="~/data/tools/sfm2-deactivate.sh"
+          alias sfm2-instance-switch="~/data/tools/instance-switch.sh"
+          alias sfm2-server="(sfm2-source && sfm-server --log-level=debug)"
+          alias sfm2-taskd="(sfm2-source && sfm-taskd --debug)"
+          alias sfm2-log-server="(less +F ~/sfm2/instance/logs/sfm2-server.log)"
+          alias sfm2-log-taskd="(less +F ~/sfm2/instance/logs/sfm2-taskd.log)"
+          alias sfm2-log-gunicorn="(less +F ~/sfm2/instance/logs/gunicorn-error.log)"
+          alias vdb="psql -h virtualdb.engineering.redhat.com -p 5432 -U srt -d srt"
+
+    - name: install git
+      yum:
+        name: git
+        state: present
+
+    # TODO configure VPN
+    # TODO clone repositories
+    # - assembler
+    # - checklists
+    # - dashboard
+    # - product-definitions
+    # - ps-constants
+    # - public-slide-decks
+    # - retrocat
+    # - sfm2
+    - name: create ~/prodsec/sfm2
+      file:
+        path: "/home/{{ user }}/prodsec/sfm2"
+        state: directory
+      become_user: "{{ user }}"
+    - name: setup ~/sfm2 symlink
+      block:
+        # check ~/sfm2 is symlink and remove if not
+        # otherwise SELinux prevents creating symlink from file
+        - name: get ~/sfm2 stats
+          stat:
+            path: "/home/{{ user }}/sfm2"
+          register: sfm2
+        - name: remove ~/sfm2 if not symlink
+          file:
+            state: absent
+            path: "/home/{{ user }}/sfm2"
+          when: >
+            sfm2.stat.exists == true and
+            ( sfm2.stat.islnk is not defined or sfm2.stat.islnk == false )
+        - name: create ~/sfm2 symlink
+          file:
+            src: "/home/{{ user }}/prodsec/sfm2"
+            dest: "/home/{{ user }}/sfm2"
+            state: link
+          become_user: "{{ user }}"
+    - name: get new .sfm2clientrc stats
+      stat:
+        path: "/home/{{ user }}/data/config/dot-sfm2clientrc"
+      register: new_sfm2clientrc
+    - name: setup .sfm2clientrc
+      block:
+        # check .sfm2clientrc is symlink and remove if not
+        # otherwise SELinux prevents creating symlink from file
+        - name: get old .sfm2clientrc stats
+          stat:
+            path: "/home/{{ user }}/.sfm2clientrc"
+          register: old_sfm2clientrc
+        - name: remove old .sfm2clientrc if not symlink
+          file:
+            state: absent
+            path: "/home/{{ user }}/.sfm2clientrc"
+          when: >
+            old_sfm2clientrc.stat.exists == true and
+            ( old_sfm2clientrc.stat.islnk is not defined or old_sfm2clientrc.stat.islnk == false )
+        - name: symlink new sfm2clientrc config
+          file:
+            src: "/home/{{ user }}/data/config/dot-sfm2clientrc"
+            dest: "/home/{{ user }}/.sfm2clientrc"
+            state: link
+          become_user: "{{ user }}"
+      when: new_sfm2clientrc.stat.exists == true
+    # - xenuti-internal
+
+    # HexChat
+    - name: install hexchat
+      yum:
+        name: hexchat
+        state: present
+    - name: create ~/.config/hexchat
+      file:
+        path: "/home/{{ user }}/.config/hexchat"
+        state: directory
+      become_user: "{{ user }}"
+    - name: get new hexchat config stats
+      stat:
+        path: "/home/{{ user }}/data/config/servlist.conf"
+      register: new_hexchat
+    - name: setup hexchat config
+      block:
+        # check hexchat config is symlink and remove if not
+        # otherwise SELinux prevents creating symlink from file
+        - name: get old hexchat config stats
+          stat:
+            path: "/home/{{ user }}/.config/hexchat/servlist.conf"
+          register: old_hexchat
+        - name: remove old hexchat config if not symlink
+          file:
+            state: absent
+            path: "/home/{{ user }}/.config/hexchat/servlist.conf"
+          when: >
+            old_hexchat.stat.exists == true and
+            ( old_hexchat.stat.islnk is not defined or old_hexchat.stat.islnk == false )
+        - name: symlink new hexchat config
+          file:
+            src: "/home/{{ user }}/data/config/servlist.conf"
+            dest: "/home/{{ user }}/.config/hexchat/servlist.conf"
+            state: link
+          become_user: "{{ user }}"
+      when: new_hexchat.stat.exists == true
