@@ -93,3 +93,8 @@
   import_playbook: vim/ansible-vim.yml
   vars:
     user: "{{ user }}"
+
+- name: wiki setup
+  import_playbook: wiki/ansible-wiki.yml
+  vars:
+    user: "{{ user }}"

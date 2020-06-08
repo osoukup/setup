@@ -1,0 +1,11 @@
+[Unit]
+Description=Tiddly Server service
+After = network.target
+
+[Service]
+ExecStart=/bin/bash /home/{{ user }}/data/TiddlyServer-2.0.8/wiki.app
+StandardOutput=null
+
+[Install]
+WantedBy=multi-user.target
+Alias=wiki.service

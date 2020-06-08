@@ -1,0 +1,33 @@
+# Tiddly Wiki setup playbook
+#
+# * define user variable as argument
+#
+#   ansible-wiki.yml -e "user=vagrant"
+---
+- name: wiki setup
+  hosts: localhost
+  gather_facts: false
+  become: true
+  tasks:
+    - name: check mandatory variables are defined
+      assert:
+        that:
+          - user is defined
+
+    - name: install nodejs
+      yum:
+        name: nodejs
+        state: present
+
+    # wiki synced from Dropbox required work
+
+    - name: setup wiki unit file
+      template:
+        src: "/home/{{ user }}/osoukup/setup/wiki/wiki.service.template"
+        dest: "/lib/systemd/system/wiki.service"
+
+    - name: enable and start wiki service
+      systemd:
+        name: wiki.service
+        state: started
+        enabled: yes
