@@ -1,0 +1,127 @@
+# keys setup playbook
+#
+# * define user variable as argument
+#
+#   ansible-keys.yml -e "user=vagrant"
+---
+- name: keys setup
+  hosts: localhost
+  gather_facts: false
+  become: true
+  tasks:
+    - name: check mandatory variables are defined
+      assert:
+        that:
+          - user is defined
+
+    # .gnupg
+    - name: get new gpg dir stats
+      stat:
+        path: "/home/{{ user }}/data/keys/dot-gnupg"
+      register: new_gnupg
+    - name: setup gpg dir
+      block:
+        # check gpg dir is symlink and remove if not
+        # otherwise SELinux prevents creating symlink from file
+        - name: get old gpg dir stats
+          stat:
+            path: "/home/{{ user }}/.gnupg"
+          register: old_gnupg
+        - name: remove old gpg dir if not symlink
+          file:
+            state: absent
+            path: "/home/{{ user }}/.gnupg"
+          when: >
+            old_gnupg.stat.exists == true and
+            ( old_gnupg.stat.islnk is not defined or old_gnupg.stat.islnk == false )
+        - name: symlink new gpg dir
+          file:
+            src: "/home/{{ user }}/data/keys/dot-gnupg"
+            dest: "/home/{{ user }}/.gnupg"
+            state: link
+          become_user: "{{ user }}"
+      when: new_gnupg.stat.exists == true
+
+    # .password-store
+    - name: get new pass dir stats
+      stat:
+        path: "/home/{{ user }}/data/keys/dot-password-store"
+      register: new_password_store
+    - name: setup pass dir
+      block:
+        # check pass dir is symlink and remove if not
+        # otherwise SELinux prevents creating symlink from file
+        - name: get old pass dir stats
+          stat:
+            path: "/home/{{ user }}/.password-store"
+          register: old_password_store
+        - name: remove old pass dir if not symlink
+          file:
+            state: absent
+            path: "/home/{{ user }}/.password-store"
+          when: >
+            old_password_store.stat.exists == true and
+            ( old_password_store.stat.islnk is not defined or old_password_store.stat.islnk == false )
+        - name: symlink new pass dir
+          file:
+            src: "/home/{{ user }}/data/keys/dot-password-store"
+            dest: "/home/{{ user }}/.password-store"
+            state: link
+          become_user: "{{ user }}"
+      when: new_password_store.stat.exists == true
+
+    # .ssh
+    - name: get new ssh dir stats
+      stat:
+        path: "/home/{{ user }}/data/keys/dot-ssh"
+      register: new_ssh
+    - name: setup ssh dir
+      block:
+        # check ssh dir is symlink and remove if not
+        # otherwise SELinux prevents creating symlink from file
+        - name: get old ssh dir stats
+          stat:
+            path: "/home/{{ user }}/.ssh"
+          register: old_ssh
+        - name: remove old ssh dir if not symlink
+          file:
+            state: absent
+            path: "/home/{{ user }}/.ssh"
+          when: >
+            old_ssh.stat.exists == true and
+            ( old_ssh.stat.islnk is not defined or old_ssh.stat.islnk == false )
+        - name: symlink new ssh dir
+          file:
+            src: "/home/{{ user }}/data/keys/dot-ssh"
+            dest: "/home/{{ user }}/.ssh"
+            state: link
+          become_user: "{{ user }}"
+      when: new_ssh.stat.exists == true
+
+    # .pgpass
+    - name: get new postgresql password file stats
+      stat:
+        path: "/home/{{ user }}/data/keys/dot-pgpass"
+      register: new_pgpass
+    - name: setup postgresql password file
+      block:
+        # check postgresql password file is symlink and remove if not
+        # otherwise SELinux prevents creating symlink from file
+        - name: get old postgresql password file stats
+          stat:
+            path: "/home/{{ user }}/.pgpass"
+          register: old_pgpass
+        - name: remove old postgresql password file if not symlink
+          file:
+            state: absent
+            path: "/home/{{ user }}/.pgpass"
+          when: >
+            old_pgpass.stat.exists == true and
+            ( old_pgpass.stat.islnk is not defined or old_pgpass.stat.islnk == false )
+        - name: symlink new postgresql password file
+          file:
+            src: "/home/{{ user }}/data/keys/dot-pgpass"
+            dest: "/home/{{ user }}/.pgpass"
+            state: link
+          become_user: "{{ user }}"
+      when: new_pgpass.stat.exists == true

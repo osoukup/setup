@@ -74,6 +74,11 @@
   vars:
     user: "{{ user }}"
 
+- name: keys setup
+  import_playbook: ansible-keys.yml
+  vars:
+    user: "{{ user }}"
+
 - name: prodsec setup
   import_playbook: ansible-prodsec.yml
   vars:
