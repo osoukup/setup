@@ -84,6 +84,11 @@
   vars:
     user: "{{ user }}"
 
+- name: random setup
+  import_playbook: ansible-random.yml
+  vars:
+    user: "{{ user }}"
+
 - name: ranger setup
   import_playbook: ansible-ranger.yml
   vars:

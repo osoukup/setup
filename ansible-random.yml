@@ -1,0 +1,82 @@
+# random stuff setup playbook
+# - things which do not fit elsewhere
+#
+# * define user variable as argument
+#
+#   ansible-random.yml -e "user=vagrant"
+---
+- name: random setup
+  hosts: localhost
+  gather_facts: false
+  become: true
+  tasks:
+    - name: check mandatory variables are defined
+      assert:
+        that:
+          - user is defined
+
+    - name: create ~/.config
+      file:
+        path: "/home/{{ user }}/.config"
+        state: directory
+      become_user: "{{ user }}"
+
+    - name: get new flake8 config stats
+      stat:
+        path: "/home/{{ user }}/data/config/flake8"
+      register: new_flake8
+    - name: setup flake8 config
+      block:
+        # check flake8 config is symlink and remove if not
+        # otherwise SELinux prevents creating symlink from file
+        - name: get old flake8 config stats
+          stat:
+            path: "/home/{{ user }}/.config/flake8"
+          register: old_flake8
+        - name: remove old flake8 config if not symlink
+          file:
+            state: absent
+            path: "/home/{{ user }}/.config/flake8"
+          when: >
+            old_flake8.stat.exists == true and
+            ( old_flake8.stat.islnk is not defined or old_flake8.stat.islnk == false )
+        - name: symlink new flake8 config
+          file:
+            src: "/home/{{ user }}/data/config/flake8"
+            dest: "/home/{{ user }}/.config/flake8"
+            state: link
+          become_user: "{{ user }}"
+      when: new_flake8.stat.exists == true
+
+    # setup start script
+    - name: create ~/.config/autostart
+      file:
+        path: "/home/{{ user }}/.config/autostart"
+        state: directory
+      become_user: "{{ user }}"
+    - name: get new start script stats
+      stat:
+        path: "/home/{{ user }}/data/startup/start.desktop"
+      register: new_start
+    - name: setup start script
+      block:
+        # check start script is symlink and remove if not
+        # otherwise SELinux prevents creating symlink from file
+        - name: get old start script stats
+          stat:
+            path: "/home/{{ user }}/.config/autostart/start.desktop"
+          register: old_start
+        - name: remove old start script if not symlink
+          file:
+            state: absent
+            path: "/home/{{ user }}/.config/autostart/start.desktop"
+          when: >
+            old_start.stat.exists == true and
+            ( old_start.stat.islnk is not defined or old_start.stat.islnk == false )
+        - name: symlink new start script
+          file:
+            src: "/home/{{ user }}/data/startup/start.desktop"
+            dest: "/home/{{ user }}/.config/autostart/start.desktop"
+            state: link
+          become_user: "{{ user }}"
+      when: new_start.stat.exists == true
