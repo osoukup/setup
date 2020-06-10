@@ -42,7 +42,11 @@
           become_user: "{{ user }}"
       when: new_gnupg.stat.exists == true
 
-    # .password-store
+    # setup pass
+    - name: install pass
+      yum:
+        name: pass
+        state: present
     - name: get new pass dir stats
       stat:
         path: "/home/{{ user }}/data/keys/dot-password-store"
