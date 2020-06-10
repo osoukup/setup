@@ -78,14 +78,15 @@
         state: present
 
     # TODO clone repositories
-    # - assembler
-    # - checklists
-    # - dashboard
-    # - product-definitions
-    # - ps-constants
-    # - public-slide-decks
-    # - retrocat
-    # - sfm2
+    # assembler           : git clone git@git.prodsec.redhat.com:devops/assembler.git
+    # checklists          : git clone git@git.prodsec.redhat.com:prodsec/checklists.git
+    # dashboard           : git clone git@git.prodsec.redhat.com:devops/dashboard.git
+    # product-definitions : git clone git@git.prodsec.redhat.com:prodsec/product-definitions.git
+    # ps-constants        : git clone git@git.prodsec.redhat.com:devops/ps-constants.git
+    # public-slide-decks  : git clone git@git.prodsec.redhat.com:prodsec/public-slide-decks.git
+    # retrocat            : git clone git@git.prodsec.redhat.com:devops/retrocat.git
+    # sfm2                : git clone git@git.prodsec.redhat.com:devops/sfm2.git
+    # xenuti-internal     : git clone git@git.prodsec.redhat.com:devops/xenuti-internal.git
     - name: create ~/prodsec/sfm2
       file:
         path: "/home/{{ user }}/prodsec/sfm2"
@@ -138,7 +139,6 @@
             state: link
           become_user: "{{ user }}"
       when: new_sfm2clientrc.stat.exists == true
-    # - xenuti-internal
 
     # HexChat
     - name: install hexchat
