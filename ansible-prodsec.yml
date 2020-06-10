@@ -61,6 +61,17 @@
     # https://redhat.service-now.com/sys_attachment.do?sys_id=dea078f41bc9d4104cec766dcc4bcba0
     # https://redhat.service-now.com/sys_attachment.do?sys_id=9aa078f41bc9d4104cec766dcc4bcba2
 
+    # setup Kerberos
+    - name: install krb5-workstation
+      yum:
+        name: krb5-workstation
+        state: present
+    - name: setup Kerberos config
+      copy:
+        src: "/home/{{ user }}/data/config/krb5.conf"
+        dest: "/etc/krb5.conf"
+        mode: "0644"
+
     - name: install git
       yum:
         name: git
