@@ -87,3 +87,13 @@
       yum:
         name: bat
         state: present
+
+    # install browsers
+    - name: install chromium
+      yum:
+        name: chromium
+        state: present
+    - name: install firefox
+      yum:
+        name: firefox
+        state: present
