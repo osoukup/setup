@@ -48,12 +48,24 @@
           alias sfm2-log-gunicorn="(less +F ~/sfm2/instance/logs/gunicorn-error.log)"
           alias vdb="psql -h virtualdb.engineering.redhat.com -p 5432 -U srt -d srt"
 
+    # setup VPN - partially
+    - name: install NetworkManager-openvpn
+      yum:
+        name: NetworkManager-openvpn
+        state: present
+    - name: install NetworkManager-openvpn-gnome
+      yum:
+        name: NetworkManager-openvpn-gnome
+        state: present
+    # TODO install the RPMs from the following URLs manually
+    # https://redhat.service-now.com/sys_attachment.do?sys_id=dea078f41bc9d4104cec766dcc4bcba0
+    # https://redhat.service-now.com/sys_attachment.do?sys_id=9aa078f41bc9d4104cec766dcc4bcba2
+
     - name: install git
       yum:
         name: git
         state: present
 
-    # TODO configure VPN
     # TODO clone repositories
     # - assembler
     # - checklists
