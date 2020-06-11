@@ -97,3 +97,21 @@
       yum:
         name: firefox
         state: present
+
+    # installing vlc
+    # requires rmpfusion
+    - name: get Fedora version
+      shell: cut -d\  -f3 /etc/fedora-release
+      register: fedora_version
+    - name: install rpmfusion-free
+      yum:
+        name: "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ fedora_version.stdout }}.noarch.rpm"
+        state: present
+    - name: install rpmfusion-nonfree
+      yum:
+        name: "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ fedora_version.stdout }}.noarch.rpm"
+        state: present
+    - name: install vlc
+      yum:
+        name: vlc
+        state: present
