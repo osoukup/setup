@@ -115,3 +115,15 @@
       yum:
         name: vlc
         state: present
+
+    # GNOME setup
+    - name: install gnome-tweak-tool
+      yum:
+        name: gnome-tweak-tool
+        state: present
+    - name: install dconf-editor
+      yum:
+        name: dconf-editor
+        state: present
+    - name: setup GNOME config
+      shell: /home/{{ user }}/data/config/gnome-config.sh
