@@ -26,6 +26,8 @@
         block: |
           # git-rebase-from tool
           alias git-rebase-from="~/data/tools/git-rebase-from.sh"
+          # git shortcut for pretty graph view
+          alias git-graph="git log --graph --oneline --decorate --branches --remotes --tags"
 
           # git branch in prompt
           parse_git_branch() {
