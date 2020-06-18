@@ -24,11 +24,6 @@
         path: "/home/{{ user }}/data"
         state: directory
       become_user: "{{ user }}"
-    - name: create ~/Dropbox
-      file:
-        path: "/home/{{ user }}/Dropbox"
-        state: directory
-      become_user: "{{ user }}"
     - name: create ~/games
       file:
         path: "/home/{{ user }}/games"

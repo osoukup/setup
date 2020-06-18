@@ -1,0 +1,54 @@
+# dropbox setup playbook
+#
+# * define user variable as argument
+#
+#   ansible-dropbox.yml -e "user=vagrant"
+---
+- name: dropbox setup
+  hosts: localhost
+  gather_facts: false
+  become: true
+  tasks:
+    - name: check mandatory variables are defined
+      assert:
+        that:
+          - user is defined
+
+    - name: install dropbox
+      yum:
+        name: dropbox
+        state: present
+
+    # login into the Dropbox manually in browser through Google login
+    # start with : dropbox start -i : and follow the instuctions
+
+    - name: register Dropbox data directory
+      stat:
+        path: "/home/{{ user }}/Dropbox/data"
+      register: dropbox_dir
+    - name: check Dropbox data directory exists
+      assert:
+        that:
+          - dropbox_dir.stat.exists == true
+          - dropbox_dir.stat.isdir is defined and dropbox_dir.stat.isdir
+        fail_msg: "setup Dropbox manually : dropbox start -i"
+
+    # check data directory is symlink and remove if not
+    # otherwise SELinux prevents creating symlink from file
+    - name: register data directory
+      stat:
+        path: "/home/{{ user }}/data"
+      register: data_dir
+    - name: remove data directory if not symlink
+      file:
+        state: absent
+        path: "/home/{{ user }}/data"
+      when: >
+        data_dir.stat.exists == true and
+        ( data_dir.stat.islnk is not defined or data_dir.stat.islnk == false )
+    - name: symlink data directory to Dropbox data directory
+      file:
+        src: "/home/{{ user }}/Dropbox/data"
+        dest: "/home/{{ user }}/data"
+        state: link
+      become_user: "{{ user }}"
