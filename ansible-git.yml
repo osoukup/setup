@@ -105,6 +105,10 @@
     - name: setup osoukup GitHub repositories
       when: auto_install_key.stat.exists == true
       block:
+        - name: ensure correct permissions for private key
+          file:
+            path: "/home/{{ user }}/.ssh/auto-install-key"
+            mode: 0600
         - name: clone osoukup setup git repo
           git:
             repo: "git@github.com:osoukup/setup.git"
