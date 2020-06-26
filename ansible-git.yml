@@ -141,3 +141,8 @@
               [user]
                   email = osoukup.mail@gmail.com
                   name = osoukup
+
+    - name: install gitk
+      yum:
+        name: gitk
+        state: present
