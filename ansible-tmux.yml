@@ -33,6 +33,9 @@
         dest: "/home/{{ user }}/.tmux/plugins/tpm"
       become: yes
       become_user: "{{ user }}"
+    - name: display manual plugins install requirement info
+      debug:
+        msg: "Hit CTRL+I in tmux for installing the plugins!"
     - name: get new tmux config stats
       stat:
         path: "/home/{{ user }}/data/config/dot-tmux.conf"
