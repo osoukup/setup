@@ -81,6 +81,19 @@
       register: new_ssh
     - name: setup ssh dir
       block:
+        - name: ensure correct permissions for .ssh dir
+          file:
+            path: "/home/{{ user }}/data/keys/dot-ssh"
+            mode: 0700
+        - name: get default private ssh key stats
+          stat:
+            path: "/home/{{ user }}/data/keys/dot-ssh/id_rsa"
+          register: default_ssh_key
+        - name: ensure correct permissions for default priva ssh key
+          file:
+            path: "/home/{{ user }}/data/keys/dot-ssh/id_rsa"
+            mode: 0600
+          when: default_ssh_key.stat.exists == true
         # check ssh dir is symlink and remove if not
         # otherwise SELinux prevents creating symlink from file
         - name: get old ssh dir stats
