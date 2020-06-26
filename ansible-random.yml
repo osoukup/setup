@@ -15,6 +15,15 @@
         that:
           - user is defined
 
+    - name: setup modified cz keyboard layout
+      copy:
+        src: "/home/{{ user }}/data/config/cz"
+        dest: "/usr/share/X11/xkb/symbols/cz"
+        mode: "0644"
+    - name: display system restart requirement info
+      debug:
+        msg: "System restart required for keyboard layout change to take effect!"
+
     # check .bashrc file is symlink and remove if not
     # otherwise SELinux prevents creating symlink from file
     - name: register .bashrc file
