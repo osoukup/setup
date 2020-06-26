@@ -15,6 +15,26 @@
         that:
           - user is defined
 
+    # check .bashrc file is symlink and remove if not
+    # otherwise SELinux prevents creating symlink from file
+    - name: register .bashrc file
+      stat:
+        path: "/home/{{ user }}/.bashrc"
+      register: bashrc_file
+    - name: remove .bashrc file if not symlink
+      file:
+        state: absent
+        path: "/home/{{ user }}/.bashrc"
+      when: >
+        bashrc_file.stat.exists == true and
+        ( bashrc_file.stat.islnk is not defined or bashrc_file.stat.islnk == false )
+    - name: symlink .bashrc file
+      file:
+        src: "/home/{{ user }}/data/config/dot-bashrc"
+        dest: "/home/{{ user }}/.bashrc"
+        state: link
+      become_user: "{{ user }}"
+
     - name: create ~/.config
       file:
         path: "/home/{{ user }}/.config"
