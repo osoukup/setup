@@ -156,3 +156,36 @@
         state: present
     - name: setup GNOME config
       shell: /home/{{ user }}/data/config/gnome-config.sh
+
+    # install development tools
+    - name: install did
+      yum:
+        name: did
+        state: present
+    - name: create ~/.did
+      file:
+        path: "/home/{{ user }}/.did"
+        state: directory
+      become_user: "{{ user }}"
+    - name: install httpie
+      yum:
+        name: httpie
+        state: present
+    - name: install jq
+      yum:
+        name: jq
+        state: present
+    - name: install meld
+      yum:
+        name: meld
+        state: present
+
+    # intall other random stuff
+    - name: install feh
+      yum:
+        name: feh
+        state: present
+    - name: install kolourpaint
+      yum:
+        name: kolourpaint
+        state: present
