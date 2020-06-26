@@ -101,6 +101,9 @@
             state: link
           become_user: "{{ user }}"
       when: new_ssh.stat.exists == true
+    - name: add ssh key to keyring
+      shell: eval $(ssh-agent)
+      become_user: "{{ user }}"
 
     # .pgpass
     - name: get new postgresql password file stats
