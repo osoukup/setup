@@ -21,6 +21,10 @@
       register: new_gnupg
     - name: setup gpg dir
       block:
+        - name: ensure correct permissions for .gnupg dir
+          file:
+            path: "/home/{{ user }}/data/keys/dot-gnupg"
+            mode: 0700
         # check gpg dir is symlink and remove if not
         # otherwise SELinux prevents creating symlink from file
         - name: get old gpg dir stats
