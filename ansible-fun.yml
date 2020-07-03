@@ -1,0 +1,35 @@
+# fun stuff setup playbook
+#
+# * define user variable as argument
+#
+#   ansible-fun.yml -e "user=vagrant"
+---
+- name: fun stuff setup
+  hosts: localhost
+  gather_facts: false
+  become: true
+  tasks:
+    - name: check mandatory variables are defined
+      assert:
+        that:
+          - user is defined
+
+    - name: install steam
+      yum:
+        name: steam
+        state: present
+
+    - name: install skypeforlinux
+      yum:
+        name: "https://go.skype.com/skypeforlinux-64.rpm"
+        state: present
+
+    # webcam setup and test stuff
+    - name: install gtk-v4l
+      yum:
+        name: gtk-v4l
+        state: present
+    - name: install cheese
+      yum:
+        name: cheese
+        state: present
