@@ -6,7 +6,7 @@
 #   ansible-setup.yml -e "user=vagrant"
 ---
 - name: system setup
-  hosts: localhost
+  hosts: all
   gather_facts: false
   become: true
   tasks:

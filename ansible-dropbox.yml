@@ -5,7 +5,7 @@
 #   ansible-dropbox.yml -e "user=vagrant"
 ---
 - name: dropbox setup
-  hosts: localhost
+  hosts: all
   gather_facts: false
   become: true
   tasks:

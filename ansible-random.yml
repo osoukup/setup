@@ -6,7 +6,7 @@
 #   ansible-random.yml -e "user=vagrant"
 ---
 - name: random setup
-  hosts: localhost
+  hosts: all
   gather_facts: false
   become: true
   tasks:

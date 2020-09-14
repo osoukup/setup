@@ -5,7 +5,7 @@
 #   ansible-prodsec.yml -e "user=vagrant"
 ---
 - name: prodsec setup
-  hosts: localhost
+  hosts: all
   gather_facts: false
   become: true
   tasks:
