@@ -3,12 +3,10 @@
 #
 # * define user variable as argument
 #
-#   ansible-setup.yml -e "user=vagrant"
+#   ansible.yml -e "user=vagrant"
 ---
 - name: system setup
   hosts: all
-  gather_facts: false
-  become: true
   tasks:
     - name: check mandatory variables are defined
       assert:

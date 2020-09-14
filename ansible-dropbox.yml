@@ -6,8 +6,6 @@
 ---
 - name: dropbox setup
   hosts: all
-  gather_facts: false
-  become: true
   tasks:
     - name: check mandatory variables are defined
       assert:
