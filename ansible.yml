@@ -1,64 +1,37 @@
 # system setup playbook
 # one playbook to rule them all
 #
-# * define user variable as argument
-#
-#   ansible.yml -e "user=vagrant"
+#   ansible.yml
 ---
-- name: system setup
-  hosts: all
-  tasks:
-    - name: check mandatory variables are defined
-      assert:
-        that:
-          - user is defined
-
 - name: dropbox setup
   import_playbook: ansible-dropbox.yml
-  vars:
-    user: "{{ user }}"
 
 - name: dir setup
   import_playbook: ansible-dir.yml
-  vars:
-    user: "{{ user }}"
+
+- name: fun setup
+  import_playbook: ansible-fun.yml
 
 - name: git setup
   import_playbook: ansible-git.yml
-  vars:
-    user: "{{ user }}"
 
 - name: keys setup
   import_playbook: ansible-keys.yml
-  vars:
-    user: "{{ user }}"
 
 - name: prodsec setup
   import_playbook: ansible-prodsec.yml
-  vars:
-    user: "{{ user }}"
 
 - name: random setup
   import_playbook: ansible-random.yml
-  vars:
-    user: "{{ user }}"
 
 - name: ranger setup
   import_playbook: ansible-ranger.yml
-  vars:
-    user: "{{ user }}"
 
 - name: tmux setup
   import_playbook: ansible-tmux.yml
-  vars:
-    user: "{{ user }}"
 
 - name: vim setup
   import_playbook: vim/ansible-vim.yml
-  vars:
-    user: "{{ user }}"
 
 - name: wiki setup
   import_playbook: wiki/ansible-wiki.yml
-  vars:
-    user: "{{ user }}"
