@@ -1,8 +1,6 @@
 # tmux setup playbook
 #
-# * define user variable as argument
-#
-#   ansible-tmux.yml -e "user=vagrant"
+#   ansible-tmux.yml
 ---
 - name: tmux setup
   hosts: all
@@ -39,24 +37,10 @@
         path: "/home/{{ user }}/data/config/dot-tmux.conf"
       register: new_tmux_conf
     - name: setup tmux config
-      block:
-        # check tmux config is symlink and remove if not
-        # otherwise SELinux prevents creating symlink from file
-        - name: get old tmux config stats
-          stat:
-            path: "/home/{{ user }}/.tmux.conf"
-          register: old_tmux_conf
-        - name: remove tmux old config if not symlink
-          file:
-            state: absent
-            path: "/home/{{ user }}/.tmux.conf"
-          when: >
-            old_tmux_conf.stat.exists == true and
-            ( old_tmux_conf.stat.islnk is not defined or old_tmux_conf.stat.islnk == false )
-        - name: symlink new tmux config
-          file:
-            src: "/home/{{ user }}/data/config/dot-tmux.conf"
-            dest: "/home/{{ user }}/.tmux.conf"
-            state: link
-          become_user: "{{ user }}"
+      file:
+        src: "/home/{{ user }}/data/config/dot-tmux.conf"
+        dest: "/home/{{ user }}/.tmux.conf"
+        state: link
+        force: true
+      become_user: "{{ user }}"
       when: new_tmux_conf.stat.exists == true
