@@ -1,8 +1,6 @@
 # git setup playbook
 #
-# * define user variable as argument
-#
-#   ansible-git.yml -e "user=vagrant"
+#   ansible-git.yml
 ---
 - name: git setup
   hosts: all
@@ -41,54 +39,26 @@
         path: "/home/{{ user }}/data/config/dot-gitconfig"
       register: new_gitconfig
     - name: setup git config
+      file:
+        src: "/home/{{ user }}/data/config/dot-gitconfig"
+        dest: "/home/{{ user }}/.gitconfig"
+        state: link
+        force: true
+      become_user: "{{ user }}"
       when: new_gitconfig.stat.exists == true
-      block:
-        # check git config is symlink and remove if not
-        # otherwise SELinux prevents creating symlink from file
-        - name: get old git config stats
-          stat:
-            path: "/home/{{ user }}/.gitconfig"
-          register: old_gitconfig
-        - name: remove old git config if not symlink
-          file:
-            state: absent
-            path: "/home/{{ user }}/.gitconfig"
-          when: >
-            old_gitconfig.stat.exists == true and
-            ( old_gitconfig.stat.islnk is not defined or old_gitconfig.stat.islnk == false )
-        - name: symlink new git config
-          file:
-            src: "/home/{{ user }}/data/config/dot-gitconfig"
-            dest: "/home/{{ user }}/.gitconfig"
-            state: link
-          become_user: "{{ user }}"
 
     - name: get new git ignore list stats
       stat:
         path: "/home/{{ user }}/data/config/dot-gitignore"
       register: new_gitignore
     - name: setup git ignore list
+      file:
+        src: "/home/{{ user }}/data/config/dot-gitignore"
+        dest: "/home/{{ user }}/.gitignore"
+        state: link
+        force: true
+      become_user: "{{ user }}"
       when: new_gitignore.stat.exists == true
-      block:
-        # check git ignore list is symlink and remove if not
-        # otherwise SELinux prevents creating symlink from file
-        - name: get old git ignore list stats
-          stat:
-            path: "/home/{{ user }}/.gitignore"
-          register: old_gitignore
-        - name: remove old git ignore list if not symlink
-          file:
-            state: absent
-            path: "/home/{{ user }}/.gitignore"
-          when: >
-            old_gitignore.stat.exists == true and
-            ( old_gitignore.stat.islnk is not defined or old_gitignore.stat.islnk == false )
-        - name: symlink new git ignore list
-          file:
-            src: "/home/{{ user }}/data/config/dot-gitignore"
-            dest: "/home/{{ user }}/.gitignore"
-            state: link
-          become_user: "{{ user }}"
 
     - name: create osoukup GitHub repo directory
       file:
@@ -101,7 +71,6 @@
       register: auto_install_key
     # setup osoukup GitHub repositories if auto-install-key present
     - name: setup osoukup GitHub repositories
-      when: auto_install_key.stat.exists == true
       block:
         - name: ensure correct permissions for private key
           file:
@@ -139,6 +108,7 @@
               [user]
                   email = osoukup.mail@gmail.com
                   name = osoukup
+      when: auto_install_key.stat.exists == true
 
     - name: install gitk
       yum:
