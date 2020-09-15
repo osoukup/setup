@@ -1,8 +1,6 @@
 # RH PS work setup playbook
 #
-# * define user variable as argument
-#
-#   ansible-prodsec.yml -e "user=vagrant"
+#   ansible-prodsec.yml
 ---
 - name: prodsec setup
   hosts: all
@@ -32,6 +30,7 @@
           export SFM2_SERVER_CONFIG=~/sfm2/instance/development.ini
           # DevOps tools shortcuts
           alias asm-source="source ~/prodsec/assembler/venv/bin/activate"
+          alias retrocat-source="source ~/prodsec/retrocat/venv/bin/activate"
           alias sfm2-db="sqlitebrowser ~/sfm2/instance/sfm2-database.sqlite"
           alias sfm2-db-clear="rm ~/sfm2/instance/sfm2-database.sqlite"
           alias sfm2-shell="(sfm2-source && python ~/sfm2/sfm2/shell.py)"
@@ -91,51 +90,23 @@
         state: directory
       become_user: "{{ user }}"
     - name: setup ~/sfm2 symlink
-      block:
-        # check ~/sfm2 is symlink and remove if not
-        # otherwise SELinux prevents creating symlink from file
-        - name: get ~/sfm2 stats
-          stat:
-            path: "/home/{{ user }}/sfm2"
-          register: sfm2
-        - name: remove ~/sfm2 if not symlink
-          file:
-            state: absent
-            path: "/home/{{ user }}/sfm2"
-          when: >
-            sfm2.stat.exists == true and
-            ( sfm2.stat.islnk is not defined or sfm2.stat.islnk == false )
-        - name: create ~/sfm2 symlink
-          file:
-            src: "/home/{{ user }}/prodsec/sfm2"
-            dest: "/home/{{ user }}/sfm2"
-            state: link
-          become_user: "{{ user }}"
+      file:
+        src: "/home/{{ user }}/prodsec/sfm2"
+        dest: "/home/{{ user }}/sfm2"
+        state: link
+        force: true
+      become_user: "{{ user }}"
     - name: get new .sfm2clientrc stats
       stat:
         path: "/home/{{ user }}/data/config/dot-sfm2clientrc"
       register: new_sfm2clientrc
     - name: setup .sfm2clientrc
-      block:
-        # check .sfm2clientrc is symlink and remove if not
-        # otherwise SELinux prevents creating symlink from file
-        - name: get old .sfm2clientrc stats
-          stat:
-            path: "/home/{{ user }}/.sfm2clientrc"
-          register: old_sfm2clientrc
-        - name: remove old .sfm2clientrc if not symlink
-          file:
-            state: absent
-            path: "/home/{{ user }}/.sfm2clientrc"
-          when: >
-            old_sfm2clientrc.stat.exists == true and
-            ( old_sfm2clientrc.stat.islnk is not defined or old_sfm2clientrc.stat.islnk == false )
-        - name: symlink new sfm2clientrc config
-          file:
-            src: "/home/{{ user }}/data/config/dot-sfm2clientrc"
-            dest: "/home/{{ user }}/.sfm2clientrc"
-            state: link
-          become_user: "{{ user }}"
+      file:
+        src: "/home/{{ user }}/data/config/dot-sfm2clientrc"
+        dest: "/home/{{ user }}/.sfm2clientrc"
+        state: link
+        force: true
+      become_user: "{{ user }}"
       when: new_sfm2clientrc.stat.exists == true
 
     # HexChat
@@ -153,62 +124,39 @@
         path: "/home/{{ user }}/data/config/servlist.conf"
       register: new_hexchat
     - name: setup hexchat config
-      block:
-        # check hexchat config is symlink and remove if not
-        # otherwise SELinux prevents creating symlink from file
-        - name: get old hexchat config stats
-          stat:
-            path: "/home/{{ user }}/.config/hexchat/servlist.conf"
-          register: old_hexchat
-        - name: remove old hexchat config if not symlink
-          file:
-            state: absent
-            path: "/home/{{ user }}/.config/hexchat/servlist.conf"
-          when: >
-            old_hexchat.stat.exists == true and
-            ( old_hexchat.stat.islnk is not defined or old_hexchat.stat.islnk == false )
-        - name: symlink new hexchat config
-          file:
-            src: "/home/{{ user }}/data/config/servlist.conf"
-            dest: "/home/{{ user }}/.config/hexchat/servlist.conf"
-            state: link
-          become_user: "{{ user }}"
+      file:
+        src: "/home/{{ user }}/data/config/servlist.conf"
+        dest: "/home/{{ user }}/.config/hexchat/servlist.conf"
+        state: link
+        force: true
+      become_user: "{{ user }}"
       when: new_hexchat.stat.exists == true
 
-    # install development stuff
-    - name: install gcc
+    - name: install development stuff
       yum:
-        name: gcc
+        name:
+          - gcc
+          - glibc-devel
+          - libcap-devel
+          - postgresql-devel
+          - krb5-devel
+          - black
+          - tox
+          - gitk
+          - sqlitebrowser
+          - rpmdevtools
         state: present
-    - name: install glibc-devel
-      yum:
-        name: glibc-devel
-        state: present
-    - name: install libcap-devel
-      yum:
-        name: libcap-devel
-        state: present
-    - name: install postgresql-devel
-      yum:
-        name: postgresql-devel
-        state: present
-    - name: install krb5-devel
-      yum:
-        name: krb5-devel
-        state: present
-    - name: install black
-      yum:
-        name: black
-        state: present
-    - name: install tox
-      yum:
-        name: tox
-        state: present
-    - name: install gitk
-      yum:
-        name: gitk
-        state: present
-    - name: install sqlitebrowser
-      yum:
-        name: sqlitebrowser
-        state: present
+    - name: install stuff from prodsec repo
+      block:
+        - name: install prodsec repo
+          yum:
+            name: https://prodsec.redhat.com/yum/prodsec-repo-latest.all.noarch.rpm
+            state: present
+        - name: install rh-signing-tools-lite
+          yum:
+            name: rh-signing-tools-lite
+            state: present
+      rescue:
+        - name: report failure
+          debug:
+            message: "prodsec repo failure"
