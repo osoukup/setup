@@ -1,17 +1,10 @@
 # fun stuff setup playbook
 #
-# * define user variable as argument
-#
-#   ansible-fun.yml -e "user=vagrant"
+#   ansible-fun.yml
 ---
 - name: fun stuff setup
   hosts: all
   tasks:
-    - name: check mandatory variables are defined
-      assert:
-        that:
-          - user is defined
-
     - name: install steam
       yum:
         name: steam
