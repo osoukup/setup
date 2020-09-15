@@ -1,9 +1,7 @@
 # random stuff setup playbook
 # - things which do not fit elsewhere
 #
-# * define user variable as argument
-#
-#   ansible-random.yml -e "user=vagrant"
+#   ansible-random.yml
 ---
 - name: random setup
   hosts: all
@@ -22,24 +20,12 @@
       debug:
         msg: "System restart required for keyboard layout change to take effect!"
 
-    # check .bashrc file is symlink and remove if not
-    # otherwise SELinux prevents creating symlink from file
-    - name: register .bashrc file
-      stat:
-        path: "/home/{{ user }}/.bashrc"
-      register: bashrc_file
-    - name: remove .bashrc file if not symlink
-      file:
-        state: absent
-        path: "/home/{{ user }}/.bashrc"
-      when: >
-        bashrc_file.stat.exists == true and
-        ( bashrc_file.stat.islnk is not defined or bashrc_file.stat.islnk == false )
     - name: symlink .bashrc file
       file:
         src: "/home/{{ user }}/data/config/dot-bashrc"
         dest: "/home/{{ user }}/.bashrc"
         state: link
+        force: true
       become_user: "{{ user }}"
 
     - name: create ~/.config
@@ -53,26 +39,12 @@
         path: "/home/{{ user }}/data/config/flake8"
       register: new_flake8
     - name: setup flake8 config
-      block:
-        # check flake8 config is symlink and remove if not
-        # otherwise SELinux prevents creating symlink from file
-        - name: get old flake8 config stats
-          stat:
-            path: "/home/{{ user }}/.config/flake8"
-          register: old_flake8
-        - name: remove old flake8 config if not symlink
-          file:
-            state: absent
-            path: "/home/{{ user }}/.config/flake8"
-          when: >
-            old_flake8.stat.exists == true and
-            ( old_flake8.stat.islnk is not defined or old_flake8.stat.islnk == false )
-        - name: symlink new flake8 config
-          file:
-            src: "/home/{{ user }}/data/config/flake8"
-            dest: "/home/{{ user }}/.config/flake8"
-            state: link
-          become_user: "{{ user }}"
+      file:
+        src: "/home/{{ user }}/data/config/flake8"
+        dest: "/home/{{ user }}/.config/flake8"
+        state: link
+        force: true
+      become_user: "{{ user }}"
       when: new_flake8.stat.exists == true
 
     # setup start script
@@ -86,26 +58,12 @@
         path: "/home/{{ user }}/data/startup/start.desktop"
       register: new_start
     - name: setup start script
-      block:
-        # check start script is symlink and remove if not
-        # otherwise SELinux prevents creating symlink from file
-        - name: get old start script stats
-          stat:
-            path: "/home/{{ user }}/.config/autostart/start.desktop"
-          register: old_start
-        - name: remove old start script if not symlink
-          file:
-            state: absent
-            path: "/home/{{ user }}/.config/autostart/start.desktop"
-          when: >
-            old_start.stat.exists == true and
-            ( old_start.stat.islnk is not defined or old_start.stat.islnk == false )
-        - name: symlink new start script
-          file:
-            src: "/home/{{ user }}/data/startup/start.desktop"
-            dest: "/home/{{ user }}/.config/autostart/start.desktop"
-            state: link
-          become_user: "{{ user }}"
+      file:
+        src: "/home/{{ user }}/data/startup/start.desktop"
+        dest: "/home/{{ user }}/.config/autostart/start.desktop"
+        state: link
+        force: true
+      become_user: "{{ user }}"
       when: new_start.stat.exists == true
 
     # install bat
@@ -115,14 +73,11 @@
         name: bat
         state: present
 
-    # install browsers
-    - name: install chromium
+    - name: install browsers
       yum:
-        name: chromium
-        state: present
-    - name: install firefox
-      yum:
-        name: firefox
+        name:
+          - chromium
+          - firefox
         state: present
 
     # installing vlc
@@ -144,46 +99,42 @@
         state: present
 
     # GNOME setup
-    - name: install gnome-tweak-tool
+    - name: install GNOME stuff
       yum:
-        name: gnome-tweak-tool
-        state: present
-    - name: install dconf-editor
-      yum:
-        name: dconf-editor
+        name:
+          - gnome-tweak-tool
+          - dconf-editor
         state: present
     - name: setup GNOME config
       shell: /home/{{ user }}/data/config/gnome-config.sh
+      changed_when: false
 
-    # install development tools
-    - name: install did
-      yum:
-        name: did
-        state: present
+    # install and setup development tools
     - name: create ~/.did
       file:
         path: "/home/{{ user }}/.did"
         state: directory
       become_user: "{{ user }}"
-    - name: install httpie
+    - name: install development tools
       yum:
-        name: httpie
-        state: present
-    - name: install jq
-      yum:
-        name: jq
-        state: present
-    - name: install meld
-      yum:
-        name: meld
+        name:
+          - did
+          - gcc
+          - httpie
+          - jq
+          - make
+          - meld
+          - vagrant
         state: present
 
-    # intall other random stuff
-    - name: install feh
+    - name: install random graphical stuff
       yum:
-        name: feh
+        name:
+          - feh
+          - kolourpaint
         state: present
-    - name: install kolourpaint
+
+    - name: install mediawriter
       yum:
-        name: kolourpaint
+        name: mediawriter
         state: present

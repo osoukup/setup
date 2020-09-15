@@ -135,7 +135,6 @@
     - name: install development stuff
       yum:
         name:
-          - gcc
           - glibc-devel
           - libcap-devel
           - postgresql-devel
