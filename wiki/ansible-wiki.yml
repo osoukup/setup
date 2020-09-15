@@ -1,12 +1,9 @@
 # Tiddly Wiki setup playbook
 #
-# * define user variable as argument
-#
-#   ansible-wiki.yml -e "user=vagrant"
+#   ansible-wiki.yml
 ---
 - name: wiki setup
-  hosts: localhost
-  gather_facts: false
+  hosts: all
   become: true
   tasks:
     - name: check mandatory variables are defined
@@ -19,7 +16,7 @@
         name: nodejs
         state: present
 
-    # wiki synced from Dropbox required work
+    # wiki synced from Dropbox required to work
 
     - name: setup wiki unit file
       template:
