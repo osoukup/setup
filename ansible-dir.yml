@@ -1,8 +1,6 @@
 # directories setup playbook
 #
-# * define user variable as argument
-#
-#   ansible-dir.yml -e "user=vagrant"
+#   ansible-dir.yml
 ---
 - name: dir setup
   hosts: all
@@ -12,28 +10,14 @@
         that:
           - user is defined
 
-    - name: create ~/osoukup
+    - name: create user directories
       file:
-        path: "/home/{{ user }}/osoukup"
+        path: "/home/{{ user }}/{{ item }}"
         state: directory
       become_user: "{{ user }}"
-    - name: create ~/data
-      file:
-        path: "/home/{{ user }}/data"
-        state: directory
-      become_user: "{{ user }}"
-    - name: create ~/games
-      file:
-        path: "/home/{{ user }}/games"
-        state: directory
-      become_user: "{{ user }}"
-    - name: create ~/log
-      file:
-        path: "/home/{{ user }}/log"
-        state: directory
-      become_user: "{{ user }}"
-    - name: create ~/test
-      file:
-        path: "/home/{{ user }}/test"
-        state: directory
-      become_user: "{{ user }}"
+      loop:
+        - "data"
+        - "games"
+        - "log"
+        - "osoukup"
+        - "test"
