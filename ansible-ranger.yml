@@ -1,8 +1,6 @@
 # ranger setup playbook
 #
-# * define user variable as argument
-#
-#   ansible-ranger.yml -e "user=vagrant"
+#   ansible-ranger.yml
 ---
 - name: ranger setup
   hosts: all
@@ -33,24 +31,10 @@
         path: "/home/{{ user }}/data/config/rc.conf"
       register: new_ranger_conf
     - name: setup ranger config
-      block:
-        # check ranger config is symlink and remove if not
-        # otherwise SELinux prevents creating symlink from file
-        - name: get old ranger config stats
-          stat:
-            path: "/home/{{ user }}/.config/ranger/rc.conf"
-          register: old_ranger_conf
-        - name: remove ranger old config if not symlink
-          file:
-            state: absent
-            path: "/home/{{ user }}/.config/ranger/rc.conf"
-          when: >
-            old_ranger_conf.stat.exists == true and
-            ( old_ranger_conf.stat.islnk is not defined or old_ranger_conf.stat.islnk == false )
-        - name: symlink new ranger config
-          file:
-            src: "/home/{{ user }}/data/config/rc.conf"
-            dest: "/home/{{ user }}/.config/ranger/rc.conf"
-            state: link
-          become_user: "{{ user }}"
+      file:
+        src: "/home/{{ user }}/data/config/rc.conf"
+        dest: "/home/{{ user }}/.config/ranger/rc.conf"
+        state: link
+        force: true
+      become_user: "{{ user }}"
       when: new_ranger_conf.stat.exists == true
