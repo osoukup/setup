@@ -1,13 +1,11 @@
 # vim install and setup playbook
 #
 # * setup ~/.ssh/auto-install-key
-# * define user variable as argument
 #
-#   ansible-vim.yml -e "user=vagrant"
+#   ansible-vim.yml
 ---
 - name: vim setup
-  hosts: localhost
-  gather_facts: false
+  hosts: all
   become: true
   tasks:
       - name: check mandatory variables are defined
@@ -43,3 +41,4 @@
             cmd: /home/{{ user }}/osoukup/setup/vim/setup-vim.sh -s -d /home/{{ user }}/osoukup/setup/vim
         become: yes
         become_user: "{{ user }}"
+        changed_when: false
