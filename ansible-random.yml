@@ -85,6 +85,7 @@
     - name: get Fedora version
       shell: cut -d\  -f3 /etc/fedora-release
       register: fedora_version
+      changed_when: false
     - name: install rpmfusion-free
       yum:
         name: "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ fedora_version.stdout }}.noarch.rpm"
@@ -107,6 +108,7 @@
         state: present
     - name: setup GNOME config
       shell: /home/{{ user }}/data/config/gnome-config.sh
+      # TODO implement some change recognition
       changed_when: false
 
     # install and setup development tools

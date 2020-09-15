@@ -41,4 +41,5 @@
             cmd: /home/{{ user }}/osoukup/setup/vim/setup-vim.sh -s -d /home/{{ user }}/osoukup/setup/vim
         become: yes
         become_user: "{{ user }}"
+        # TODO implement some change recognition
         changed_when: false
