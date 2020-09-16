@@ -55,8 +55,7 @@
         name: NetworkManager-openvpn-gnome
         state: present
     # TODO install the RPMs from the following URLs manually
-    # https://redhat.service-now.com/sys_attachment.do?sys_id=dea078f41bc9d4104cec766dcc4bcba0
-    # https://redhat.service-now.com/sys_attachment.do?sys_id=9aa078f41bc9d4104cec766dcc4bcba2
+    # https://redhat.service-now.com/help?id=kb_article_view&sysparm_article=KB0005424&sys_kb_id=02a0fcb41bc9d4104cec766dcc4bcb29
 
     # setup Kerberos
     - name: install krb5-workstation
@@ -158,4 +157,4 @@
       rescue:
         - name: report failure
           debug:
-            message: "prodsec repo failure"
+            msg: "prodsec repo failure - check VPN connection"
