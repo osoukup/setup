@@ -68,12 +68,25 @@
             path: "/home/{{ user }}/data/keys/dot-ssh/id_rsa"
             mode: 0600
           when: default_ssh_key.stat.exists == true
-        - name: symlink ssh dir
+        # check ssh dir is symlink and remove if not
+        # otherwise SELinux prevents creating symlink
+        # as it is a non-empty directory
+        - name: get old ssh dir stats
+          stat:
+            path: "/home/{{ user }}/.ssh"
+          register: old_ssh
+        - name: remove old ssh dir if not symlink
+          file:
+            state: absent
+            path: "/home/{{ user }}/.ssh"
+          when: >
+            old_ssh.stat.exists == true and
+            ( old_ssh.stat.islnk is not defined or old_ssh.stat.islnk == false )
+        - name: symlink new ssh dir
           file:
             src: "/home/{{ user }}/data/keys/dot-ssh"
             dest: "/home/{{ user }}/.ssh"
             state: link
-            force: true
           become_user: "{{ user }}"
       when: new_ssh.stat.exists == true
     - name: add ssh key to keyring
