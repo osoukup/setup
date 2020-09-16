@@ -21,3 +21,15 @@
         - "log"
         - "osoukup"
         - "test"
+
+    - name: remove unused default directories
+      file:
+        path: "/home/{{ user }}/{{ item }}"
+        state: absent
+      loop:
+        - "Documents"
+        - "Music"
+        - "Pictures"
+        - "Public"
+        - "Templates"
+        - "Videos"
