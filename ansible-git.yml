@@ -109,6 +109,16 @@
                   name = osoukup
       when: auto_install_key.stat.exists == true
 
+    - name: setup user-wide git config
+      copy:
+        dest: "/home/{{ user }}/.gitconfig"
+        content: |
+          [user]
+              name = osoukup
+              email = osoukup@redhat.com
+          [core]
+              editor = /usr/bin/vimx
+
     - name: install gitk
       yum:
         name: gitk
