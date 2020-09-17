@@ -73,40 +73,57 @@
         name: git
         state: present
 
-    # TODO clone repositories
-    # assembler           : git clone git@git.prodsec.redhat.com:devops/assembler.git
-    # checklists          : git clone git@git.prodsec.redhat.com:prodsec/checklists.git
-    # dashboard           : git clone git@git.prodsec.redhat.com:devops/dashboard.git
-    # product-definitions : git clone git@git.prodsec.redhat.com:prodsec/product-definitions.git
-    # ps-constants        : git clone git@git.prodsec.redhat.com:devops/ps-constants.git
-    # public-slide-decks  : git clone git@git.prodsec.redhat.com:prodsec/public-slide-decks.git
-    # retrocat            : git clone git@git.prodsec.redhat.com:devops/retrocat.git
-    # sfm2                : git clone git@git.prodsec.redhat.com:devops/sfm2.git
-    # xenuti-internal     : git clone git@git.prodsec.redhat.com:devops/xenuti-internal.git
-    - name: create ~/prodsec/sfm2
-      file:
-        path: "/home/{{ user }}/prodsec/sfm2"
-        state: directory
-      become_user: "{{ user }}"
-    - name: setup ~/sfm2 symlink
-      file:
-        src: "/home/{{ user }}/prodsec/sfm2"
-        dest: "/home/{{ user }}/sfm2"
-        state: link
-        force: true
-      become_user: "{{ user }}"
-    - name: get new .sfm2clientrc stats
-      stat:
-        path: "/home/{{ user }}/data/config/dot-sfm2clientrc"
-      register: new_sfm2clientrc
-    - name: setup .sfm2clientrc
-      file:
-        src: "/home/{{ user }}/data/config/dot-sfm2clientrc"
-        dest: "/home/{{ user }}/.sfm2clientrc"
-        state: link
-        force: true
-      become_user: "{{ user }}"
-      when: new_sfm2clientrc.stat.exists == true
+    - name: setup prodsec repositories
+      block:
+        - name: clone repo to dir
+          git:
+            repo: "git@git.prodsec.redhat.com:{{ item.dir }}/{{ item.rep }}.git"
+            dest: "/home/{{ user }}/prodsec/{{ item.rep }}"
+            accept_hostkey: yes
+            key_file: "/home/{{ user }}/.ssh/id_rsa"
+          become_user: "{{ user }}"
+          loop:
+            - rep: "assembler"
+              dir: "devops"
+            - rep: "checklists"
+              dir: "prodsec"
+            - rep: "dashboard"
+              dir: "devops"
+            - rep: "product-definitions"
+              dir: "prodsec"
+            - rep: "ps-constants"
+              dir: "devops"
+            - rep: "public-slide-decks"
+              dir: "prodsec"
+            - rep: "retrocat"
+              dir: "devops"
+            - rep: "sfm2"
+              dir: "devops"
+            - rep: "xenuti-internal"
+              dir: "devops"
+        - name: setup ~/sfm2 symlink
+          file:
+            src: "/home/{{ user }}/prodsec/sfm2"
+            dest: "/home/{{ user }}/sfm2"
+            state: link
+            force: true
+          become_user: "{{ user }}"
+        - name: get new .sfm2clientrc stats
+          stat:
+            path: "/home/{{ user }}/data/config/dot-sfm2clientrc"
+          register: new_sfm2clientrc
+        - name: setup .sfm2clientrc
+          file:
+            src: "/home/{{ user }}/data/config/dot-sfm2clientrc"
+            dest: "/home/{{ user }}/.sfm2clientrc"
+            state: link
+            force: true
+          become_user: "{{ user }}"
+          when: new_sfm2clientrc.stat.exists == true
+      rescue:
+        - name: report failure
+          debug:
+            msg: "prodsec repo failure - check VPN connection"
 
     # HexChat
     - name: install hexchat

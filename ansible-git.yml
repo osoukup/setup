@@ -82,7 +82,6 @@
             dest: "/home/{{ user }}/osoukup/setup"
             accept_hostkey: yes
             key_file: "/home/{{ user }}/.ssh/auto-install-key"
-          become: yes
           become_user: "{{ user }}"
         - name: setup osoukup setup repo .git/config
           blockinfile:
