@@ -1,0 +1,91 @@
+# RH PS SFM2 setup playbook
+#
+#   full installation depends on ansible-prodsec.yml
+#   ansible-sfm2.yml
+---
+- name: sfm2 setup
+  hosts: all
+  tasks:
+    - name: check mandatory variables are defined
+      assert:
+        that:
+          - user is defined
+
+
+    # assume repository exists in ~/sfm2
+    - name: get sfm2 dir stats
+      stat:
+        path: "/home/{{ user }}/sfm2"
+      register: sfm2_dir
+    - name: setup sfm2
+      block:
+        - name: install python deps
+          yum:
+            name:
+              - python3
+              - python3-pip
+              - python3-devel
+              - python3-tox
+            state: present
+
+        - name: get venv stats
+          stat:
+            path: "/home/{{ user }}/sfm2/venv"
+          register: venv_dir
+        - name: setup venv
+          block:
+            - name: create venv
+              shell: "python3 -m venv /home/{{ user }}/sfm2/venv"
+            - name: install pip requirements
+              shell: "source /home/{{ user }}/sfm2/venv/bin/activate; pip install -r /home/{{ user }}/sfm2/requirements.txt -r /home/{{ user }}/sfm2/devel-requirements.txt --no-binary psycopg2"
+            - name: install cli pip requirements
+              shell: "source /home/{{ user }}/sfm2/venv/bin/activate; pip install -r /home/{{ user }}/sfm2/cli/requirements.txt -r /home/{{ user }}/sfm2/cli/devel-requirements.txt"
+            - name: install sfm2 app
+              shell: "source /home/{{ user }}/sfm2/venv/bin/activate; pip install -e /home/{{ user }}/sfm2 -e /home/{{ user }}/sfm2/cli"
+          become_user: "{{ user }}"
+          when: venv_dir.stat.exists == false
+          rescue:
+            - name: VPN connection hint
+              debug:
+                msg: "failure - check VPN connection"
+
+        - name: install RPM devel requirements
+          yum:
+            name: "{{ item }}"
+            state: present
+          with_lines: cat "/home/{{ user }}/sfm2/rpm-devel-requirements.txt"
+
+        - name: create sfm2 log directory
+          file:
+            path: "/home/{{ user }}/log/sfm2"
+            state: directory
+          become_user: "{{ user }}"
+
+        - name: setup sfm2 instance environments
+          block:
+            - name: create instance directories
+              file:
+                path: "{{ item }}"
+                state: directory
+              loop:
+                - "/home/{{ user }}/sfm2/instance-prod"
+                - "/home/{{ user }}/sfm2/instance-prod/logs"
+                - "/home/{{ user }}/sfm2/instance-stage"
+                - "/home/{{ user }}/sfm2/instance-stage/logs"
+            - name: setup production config symlink
+              file:
+                src: "/home/{{ user }}/data/config/sfm2-server-instance-prod-development.ini"
+                dest: "/home/{{ user }}/sfm2/instance-prod/development.ini"
+                state: link
+            - name: setup stage config symlink
+              file:
+                src: "/home/{{ user }}/data/config/sfm2-server-instance-stage-development.ini"
+                dest: "/home/{{ user }}/sfm2/instance-stage/development.ini"
+                state: link
+          become_user: "{{ user }}"
+
+      when: sfm2_dir.stat.exists == true
+    - name: report non-existing repo
+      fail:
+        msg: "sfm2 repo does not exist"
+      when: sfm2_dir.stat.exists == false

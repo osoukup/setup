@@ -177,3 +177,6 @@
         - name: report failure
           debug:
             msg: "prodsec repo failure - check VPN connection"
+
+- name: sfm2 setup
+  import_playbook: ansible-sfm2.yml
