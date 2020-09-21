@@ -1,0 +1,89 @@
+# RH PS Assembler setup playbook
+#
+#   full installation depends on ansible-prodsec.yml
+#   ansible-assembler.yml
+---
+- name: assembler setup
+  hosts: all
+  tasks:
+    - name: check mandatory variables are defined
+      assert:
+        that:
+          - user is defined
+
+    # assume repository exists in ~/prodsec/assembler
+    - name: get assembler dir stats
+      stat:
+        path: "/home/{{ user }}/prodsec/assembler"
+      register: assembler_dir
+    - name: setup assembler
+      block:
+        - name: setup DB
+          block:
+            - name: install postgresql
+              yum:
+                name:
+                  - postgresql
+                  - postgresql-server
+                  - postgresql-devel
+                  - postgresql-contrib
+                state: present
+            - name: init DB
+              shell: "/usr/bin/postgresql-setup --initdb"
+            - name: enable and start postgresql service
+              systemd:
+                name: postgresql
+                state: started
+                enabled: yes
+            # TODO some privileges problem
+            - name: create DB user
+              shell: "createuser -d -e -E -l -P -r -s assembler <<< 'pass'"
+              become_user: postgress
+              become_method: sudo
+            # TODO
+            # vi /var/lib/pgsql/data/pg_hba.conf : 127.0.0.1/32 -> trust
+            # become_user: postgress
+            - name: restart postgresql service
+              systemd:
+                name: postgresql
+                state: restarted
+            # TODO some privileges problem
+            - name: create DB
+              shell: "createdb assembler_db"
+              become_user: postgress
+              become_method: sudo
+          # TODO this block needs fixtures first
+          when: false
+
+        - name: get venv stats
+          stat:
+            path: "/home/{{ user }}/prodsec/assembler/venv"
+          register: venv_dir
+        - name: setup venv
+          block:
+            - name: create venv
+              shell: "python3 -m venv /home/{{ user }}/prodsec/assembler/venv"
+            - name: setup tmux shortcut aliases
+              blockinfile:
+                path: "/home/{{ user }}/prodsec/assembler/venv/bin/activate"
+                marker: "# {mark} assembler ANSIBLE MANAGED BLOCK"
+                block: |
+                  export DJANGO_SETTINGS_MODULE=assembler.settings.local
+                  export ASM_DB_USER=assembler
+                  export ASM_DB_PASSWORD=pass
+            - name: install pip requirements
+              shell: "source /home/{{ user }}/prodsec/assembler/venv/bin/activate; pip install -r /home/{{ user }}/prodsec/assembler/devel-requirements.txt"
+            - name: install assembler app
+              shell: "source /home/{{ user }}/prodsec/assembler/venv/bin/activate; pip install -e /home/{{ user }}/prodsec/assembler"
+          become_user: "{{ user }}"
+          when: venv_dir.stat.exists == false
+          rescue:
+            - name: VPN connection hint
+              debug:
+                msg: "failure - check VPN connection"
+
+      when: assembler_dir.stat.exists == true
+    - name: report non-existing repo
+      fail:
+        msg: "assembler repo does not exist"
+      when: assembler_dir.stat.exists == false
