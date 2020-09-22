@@ -17,6 +17,12 @@
         yum:
             name: gvim
             state: present
+      - name: alias vim to vimx
+        file:
+          src: "/bin/vimx"
+          dest: "/bin/vim"
+          state: link
+          force: true
 
       - name: setup vim aliases
         blockinfile:
