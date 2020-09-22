@@ -40,6 +40,8 @@
               shell: "source /home/{{ user }}/sfm2/venv/bin/activate; pip install -r /home/{{ user }}/sfm2/requirements.txt -r /home/{{ user }}/sfm2/devel-requirements.txt --no-binary psycopg2"
             - name: install cli pip requirements
               shell: "source /home/{{ user }}/sfm2/venv/bin/activate; pip install -r /home/{{ user }}/sfm2/cli/requirements.txt -r /home/{{ user }}/sfm2/cli/devel-requirements.txt"
+            - name: install ipython to enhance sfm2 shell
+              shell: "source /home/{{ user }}/sfm2/venv/bin/activate; pip install ipython"
             - name: install sfm2 app
               shell: "source /home/{{ user }}/sfm2/venv/bin/activate; pip install -e /home/{{ user }}/sfm2 -e /home/{{ user }}/sfm2/cli"
           become_user: "{{ user }}"
