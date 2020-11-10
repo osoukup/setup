@@ -14,6 +14,7 @@
       yum:
         name: ranger
         state: present
+
     - name: setup ranger shortcut alias
       blockinfile:
         path: "/home/{{ user }}/.bashrc"
@@ -21,20 +22,19 @@
         block: |
           # ranger shortcut
           alias r="ranger"
-    - name: create ~/.config/ranger
-      file:
-        path: "/home/{{ user }}/.config/ranger"
-        state: directory
+
+    - name: create default ranger configs
+      command: "ranger --copy-config=all"
+      changed_when: false
       become_user: "{{ user }}"
-    - name: get new ranger config stats
-      stat:
-        path: "/home/{{ user }}/data/config/rc.conf"
-      register: new_ranger_conf
-    - name: setup ranger config
-      file:
-        src: "/home/{{ user }}/data/config/rc.conf"
-        dest: "/home/{{ user }}/.config/ranger/rc.conf"
-        state: link
-        force: true
-      become_user: "{{ user }}"
-      when: new_ranger_conf.stat.exists == true
+
+    - name: setup ranger stuff in rc.conf
+      blockinfile:
+        path: "/home/{{ user }}/.config/ranger/rc.conf"
+        marker: "# {mark} ranger ANSIBLE MANAGED BLOCK"
+        block: |
+          # remapped keys
+          map l    move up=1
+          map k    move down=1
+          map j    move left=1
+          map ů    move right=1
