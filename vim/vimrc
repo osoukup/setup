@@ -4,8 +4,15 @@
 " no vi compatibility even whet config used another than .vimrc way
 set nocompatible
 
-" search highlight
+" improve highlight
 highlight Search cterm=NONE ctermfg=darkgreen ctermbg=yellow
+highlight Flake8_Error cterm=NONE ctermfg=white ctermbg=red
+highlight Flake8_Warning cterm=NONE ctermfg=white ctermbg=yellow
+highlight Flake8_PyFlake cterm=NONE ctermfg=white ctermbg=blue
+highlight Flake8_Complexity cterm=NONE ctermfg=white ctermbg=blue
+highlight Flake8_Naming cterm=NONE ctermfg=white ctermbg=blue
+highlight DiffAdd cterm=NONE ctermfg=NONE ctermbg=darkgrey
+highlight DiffText cterm=NONE ctermfg=NONE ctermbg=darkgrey
 " syntax highlight
 syntax on
 " file type detection and type plugin and indention file loading
