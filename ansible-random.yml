@@ -34,6 +34,10 @@
         state: directory
       become_user: "{{ user }}"
 
+    - name: install flake8
+      yum:
+        name: flake8
+        state: present
     - name: get new flake8 config stats
       stat:
         path: "/home/{{ user }}/data/config/flake8"
