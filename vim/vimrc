@@ -100,3 +100,7 @@ let g:ctrlp_custom_ignore = 'flask\|node_modules\|venv'
 noremap <leader>s :execute "vimgrep /" . expand("<cword>") . "/j **" <bar> cw<CR>
 " however ignore useless directories
 :set wildignore+=flask/**,**node_modules/**,venv/**
+
+" vim-fugitive shortcuts
+noremap <leader>i :Gstatus<CR>
+noremap <leader>o :copen<CR>
