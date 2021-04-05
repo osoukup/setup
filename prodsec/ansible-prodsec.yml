@@ -126,39 +126,6 @@
           debug:
             msg: "prodsec repo failure - check VPN connection"
 
-    # HexChat
-    - name: hexchat
-      tags: hexchat
-      block:
-      - name: install hexchat
-        dnf:
-          name: hexchat
-          state: present
-      - name: create ~/.config/hexchat
-        file:
-          path: "/home/{{ user }}/.config/hexchat"
-          state: directory
-        become_user: "{{ user }}"
-      - name: get new hexchat config stats
-        stat:
-          path: "/home/{{ user }}/data/config/servlist.conf"
-        register: new_hexchat
-      - name: setup hexchat config
-        file:
-          src: "/home/{{ user }}/data/config/servlist.conf"
-          dest: "/home/{{ user }}/.config/hexchat/servlist.conf"
-          state: link
-          force: true
-        become_user: "{{ user }}"
-        when: new_hexchat.stat.exists == true
-      - name: setup hexchat plugins
-        git:
-          repo: "git@github.com:osoukup/hexchat-plugins.git"
-          dest: "/home/{{ user }}/.config/hexchat/addons/"
-          accept_hostkey: yes
-          key_file: "/home/{{ user }}/.ssh/auto-install-key"
-        become_user: "{{ user }}"
-
     - name: install development stuff
       dnf:
         name:
@@ -187,6 +154,9 @@
         - name: report failure
           debug:
             msg: "prodsec repo failure - check VPN connection"
+
+- name: hexchat setup
+  import_playbook: ansible-hexchat.yml
 
 - name: sfm2 setup
   import_playbook: ansible-sfm2.yml
