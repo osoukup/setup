@@ -11,7 +11,7 @@
           - user is defined
 
     - name: install ranger
-      yum:
+      dnf:
         name: ranger
         state: present
 

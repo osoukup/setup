@@ -12,7 +12,7 @@
           - user is defined
 
     - name: install nodejs
-      yum:
+      dnf:
         name: nodejs
         state: present
 

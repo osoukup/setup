@@ -47,11 +47,11 @@
 
     # setup VPN - partially
     - name: install NetworkManager-openvpn
-      yum:
+      dnf:
         name: NetworkManager-openvpn
         state: present
     - name: install NetworkManager-openvpn-gnome
-      yum:
+      dnf:
         name: NetworkManager-openvpn-gnome
         state: present
     # TODO install the RPMs from the following URLs manually
@@ -59,7 +59,7 @@
 
     # setup Kerberos
     - name: install krb5-workstation
-      yum:
+      dnf:
         name: krb5-workstation
         state: present
     - name: setup Kerberos config
@@ -69,7 +69,7 @@
         mode: "0644"
 
     - name: install git
-      yum:
+      dnf:
         name: git
         state: present
 
@@ -131,7 +131,7 @@
       tags: hexchat
       block:
       - name: install hexchat
-        yum:
+        dnf:
           name: hexchat
           state: present
       - name: create ~/.config/hexchat
@@ -160,7 +160,7 @@
         become_user: "{{ user }}"
 
     - name: install development stuff
-      yum:
+      dnf:
         name:
           - glibc-devel
           - libcap-devel
@@ -175,12 +175,12 @@
     - name: install stuff from prodsec repo
       block:
         - name: install prodsec repo
-          yum:
+          dnf:
             name: https://prodsec.redhat.com/yum/prodsec-repo-latest.all.noarch.rpm
             state: present
             disable_gpg_check: true
         - name: install rh-signing-tools-lite
-          yum:
+          dnf:
             name: rh-signing-tools-lite
             state: present
       rescue:

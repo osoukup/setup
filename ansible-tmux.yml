@@ -11,7 +11,7 @@
           - user is defined
 
     - name: install tmux
-      yum:
+      dnf:
         name: tmux
         state: present
     - name: setup tmux shortcut aliases

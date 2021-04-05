@@ -32,7 +32,7 @@
 
     # setup pass
     - name: install pass
-      yum:
+      dnf:
         name: pass
         state: present
     - name: get new pass dir stats

@@ -35,7 +35,7 @@
       become_user: "{{ user }}"
 
     - name: install flake8
-      yum:
+      dnf:
         name: flake8
         state: present
     - name: get new flake8 config stats
@@ -73,12 +73,12 @@
     # install bat
     # otherwise cat does not work due to alias
     - name: install bat
-      yum:
+      dnf:
         name: bat
         state: present
 
     - name: install browsers
-      yum:
+      dnf:
         name:
           - chromium
           - firefox
@@ -91,23 +91,23 @@
       register: fedora_version
       changed_when: false
     - name: install rpmfusion-free
-      yum:
+      dnf:
         name: "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ fedora_version.stdout }}.noarch.rpm"
         state: present
         disable_gpg_check: true
     - name: install rpmfusion-nonfree
-      yum:
+      dnf:
         name: "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ fedora_version.stdout }}.noarch.rpm"
         state: present
         disable_gpg_check: true
     - name: install vlc
-      yum:
+      dnf:
         name: vlc
         state: present
 
     # GNOME setup
     - name: install GNOME stuff
-      yum:
+      dnf:
         name:
           - gnome-tweak-tool
           - dconf-editor
@@ -125,7 +125,7 @@
         state: directory
       become_user: "{{ user }}"
     - name: install development tools
-      yum:
+      dnf:
         name:
           - did
           - gcc
@@ -137,13 +137,13 @@
         state: present
 
     - name: install random graphical stuff
-      yum:
+      dnf:
         name:
           - feh
           - kolourpaint
         state: present
 
     - name: install mediawriter
-      yum:
+      dnf:
         name: mediawriter
         state: present

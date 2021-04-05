@@ -30,8 +30,8 @@ while getopts ":d:hs" opt; do
 done
 
 if [[ -z "$setup_only" ]]; then
-    sudo yum install git -y
-    sudo yum install vim -y
+    sudo dnf install git -y
+    sudo dnf install vim -y
 fi
 
 rm -f ~/.vimrc

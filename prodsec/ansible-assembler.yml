@@ -21,7 +21,7 @@
         - name: setup DB
           block:
             - name: install postgresql
-              yum:
+              dnf:
                 name:
                   - postgresql
                   - postgresql-server

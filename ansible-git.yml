@@ -11,7 +11,7 @@
           - user is defined
 
     - name: install git
-      yum:
+      dnf:
         name: git
         state: present
 
@@ -120,6 +120,6 @@
               editor = /usr/bin/vimx
 
     - name: install gitk
-      yum:
+      dnf:
         name: gitk
         state: present

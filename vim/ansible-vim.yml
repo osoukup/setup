@@ -14,7 +14,7 @@
                 - user is defined
 
       - name: install gvim
-        yum:
+        dnf:
             name: gvim
             state: present
       - name: alias vim to vimx
