@@ -30,6 +30,7 @@
           marker: "# {mark} vim ANSIBLE MANAGED BLOCK"
           block: |
             # gvim as default
+            export EDITOR="vimx"
             alias vi="vimx"
             alias vim="vimx"
 
