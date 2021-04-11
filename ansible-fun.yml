@@ -10,12 +10,6 @@
         name: steam
         state: present
 
-    - name: install skypeforlinux
-      dnf:
-        name: "https://go.skype.com/skypeforlinux-64.rpm"
-        state: present
-        disable_gpg_check: true
-
     # webcam setup and test stuff
     - name: install gtk-v4l
       dnf:
