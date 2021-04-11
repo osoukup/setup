@@ -36,7 +36,7 @@
 
     - name: install flake8
       dnf:
-        name: flake8
+        name: python3-flake8
         state: present
     - name: get new flake8 config stats
       stat:
