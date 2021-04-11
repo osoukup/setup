@@ -88,6 +88,10 @@
             dest: "/home/{{ user }}/.ssh"
             state: link
           become_user: "{{ user }}"
+        - name: set auto-install-key permissions
+          file:
+            path: "/home/{{ user }}/.ssh/auto-install-key"
+            mode: "0600"
       when: new_ssh.stat.exists == true
     - name: add ssh key to keyring
       shell: eval $(ssh-agent)
