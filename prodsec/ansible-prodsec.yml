@@ -100,8 +100,6 @@
               dir: "devops"
             - rep: "sfm2"
               dir: "devops"
-            - rep: "xenuti-internal"
-              dir: "devops"
         - name: setup ~/sfm2 symlink
           file:
             src: "/home/{{ user }}/prodsec/sfm2"
