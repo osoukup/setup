@@ -51,6 +51,9 @@ let mapleader="h"
 
 " system clipboard yank
 vnoremap <leader>y "+y
+" most recent yank paste
+" ctrl+c ctrl+v substitution
+noremap <leader>p "0p
 
 " STATUS LINE
 "
