@@ -30,7 +30,6 @@
           export SFM2_SERVER_CONFIG=~/sfm2/instance/development.ini
           # DevOps tools shortcuts
           alias asm-source="source ~/prodsec/assembler/venv/bin/activate"
-          alias retrocat-source="source ~/prodsec/retrocat/venv/bin/activate"
           alias sfm2-db="sqlitebrowser ~/sfm2/instance/sfm2-database.sqlite"
           alias sfm2-db-clear="rm ~/sfm2/instance/sfm2-database.sqlite"
           alias sfm2-shell="(sfm2-source && python ~/sfm2/sfm2/shell.py)"
@@ -86,6 +85,8 @@
           loop:
             - rep: "assembler"
               dir: "devops"
+            - rep: "autobots"
+              dir: "devops"
             - rep: "checklists"
               dir: "prodsec"
             - rep: "dashboard"
@@ -96,8 +97,6 @@
               dir: "devops"
             - rep: "public-slide-decks"
               dir: "prodsec"
-            - rep: "retrocat"
-              dir: "devops"
             - rep: "sfm2"
               dir: "devops"
         - name: setup ~/sfm2 symlink
