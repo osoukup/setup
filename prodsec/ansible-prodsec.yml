@@ -53,8 +53,7 @@
       dnf:
         name: NetworkManager-openvpn-gnome
         state: present
-    # TODO install the RPMs from the following URLs manually
-    # https://redhat.service-now.com/help?id=kb_article_view&sysparm_article=KB0005424&sys_kb_id=02a0fcb41bc9d4104cec766dcc4bcb29
+    # TODO install the other RPMs following personal Wiki :: Red Hat :: VPN setup
 
     # setup Kerberos
     - name: install krb5-workstation
