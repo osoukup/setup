@@ -90,6 +90,8 @@
               dir: "prodsec"
             - rep: "dashboard"
               dir: "devops"
+            - rep: "prodsec"
+              dir: "devops"
             - rep: "product-definitions"
               dir: "prodsec"
             - rep: "ps-constants"
