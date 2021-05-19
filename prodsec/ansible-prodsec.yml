@@ -127,6 +127,7 @@
         name:
           - glibc-devel
           - libcap-devel
+          - postgresql
           - postgresql-devel
           - krb5-devel
           - black
