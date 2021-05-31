@@ -137,6 +137,7 @@
           - gitk
           - sqlitebrowser
           - rpmdevtools
+          - vdbqb
         state: present
     - name: install stuff from prodsec repo
       block:
