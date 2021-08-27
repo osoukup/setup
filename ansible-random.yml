@@ -116,6 +116,7 @@
     - name: setup GNOME config
       shell: /home/{{ user }}/data/config/gnome-config.sh
       become_user: "{{ user }}"
+      # TODO seems to stop working in Ansible
       # TODO implement some change recognition
       changed_when: false
 
