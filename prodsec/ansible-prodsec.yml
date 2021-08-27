@@ -134,6 +134,7 @@
     - name: install development stuff
       dnf:
         name:
+          - podman-compose
           - glibc-devel
           - libcap-devel
           - postgresql
