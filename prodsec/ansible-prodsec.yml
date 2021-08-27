@@ -66,6 +66,13 @@
         dest: "/etc/krb5.conf"
         mode: "0644"
 
+    - name: add staging Jira redirection
+      lineinfile:
+        path: /etc/hosts
+        line: "10.24.129.4 sso.stage.jboss.org"
+        insertbefore: "127.0.0.1.*"
+        state: present
+
     - name: install git
       dnf:
         name: git
