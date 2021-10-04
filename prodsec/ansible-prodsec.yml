@@ -30,6 +30,8 @@
           export SFM2_SERVER_CONFIG=~/sfm2/instance/development.ini
           # DevOps tools shortcuts
           alias asm-source="source ~/prodsec/assembler/venv/bin/activate"
+          alias flawdb-source="source ~/prodsec/flawdb/venv/bin/activate"
+          alias openstack-source="source ~/data/openstack/red-hat-product-security-openrc.sh"
           alias sfm2-db="sqlitebrowser ~/sfm2/instance/sfm2-database.sqlite"
           alias sfm2-db-clear="rm ~/sfm2/instance/sfm2-database.sqlite"
           alias sfm2-shell="(sfm2-source && python ~/sfm2/sfm2/shell.py)"
