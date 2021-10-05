@@ -1,0 +1,71 @@
+# RH PS FlawDB setup playbook
+#
+#   full installation depends on ansible-prodsec.yml
+#   ansible-flawdb.yml
+---
+- name: flawdb setup
+  hosts: all
+  vars_prompt:
+    # BZ API key to setup venv variable
+    - name: bz_api_key
+      prompt: "Production BZ API key"
+  tasks:
+    - name: check mandatory variables are defined
+      assert:
+        that:
+          - bz_api_key is defined
+          - user is defined
+
+    # assume repository exists in ~/prodsec/flawdb
+    - name: get flawdb dir stats
+      stat:
+        path: "/home/{{ user }}/prodsec/flawdb"
+      register: flawdb_dir
+    - name: setup flawdb
+      block:
+        - name: install deps
+          dnf:
+            name:
+              - gcc
+              - krb5-devel
+              - libpq-devel
+              - make
+              - openldap-devel
+              - podman
+              - podman-compose
+              - python3
+              - python3-devel
+              - tox
+            state: present
+
+        - name: get venv stats
+          stat:
+            path: "/home/{{ user }}/prodsec/flawdb/venv"
+          register: venv_dir
+        - name: setup venv
+          block:
+            - name: create venv
+              shell: "python3 -m venv /home/{{ user }}/prodsec/flawdb/venv"
+            - name: install pip requirements
+              shell: "source /home/{{ user }}/prodsec/flawdb/venv/bin/activate; pip install -r /home/{{ user }}/prodsec/flawdb/requirements.txt -r /home/{{ user }}/prodsec/flawdb/devel-requirements.txt"
+            - name: install ipython to enhance flawdb shell
+              shell: "source /home/{{ user }}/prodsec/flawdb/venv/bin/activate; pip install ipython"
+            - name: set venv variables
+              blockinfile:
+                path: "/home/{{ user }}/prodsec/flawdb/venv/bin/activate"
+                marker: "# {mark} flawdb ANSIBLE MANAGED BLOCK"
+                block: |
+                  export FLAWDB_BZ_API_KEY={{ bz_api_key }}
+                  export FLAW_DB_PASSWORD=passw0rd
+          become_user: "{{ user }}"
+          when: venv_dir.stat.exists == false
+          rescue:
+            - name: VPN connection hint
+              debug:
+                msg: "failure - check VPN connection"
+
+      when: flawdb_dir.stat.exists == true
+    - name: report non-existing repo
+      fail:
+        msg: "flawdb repo does not exist"
+      when: flawdb_dir.stat.exists == false

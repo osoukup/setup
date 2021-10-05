@@ -30,6 +30,7 @@
           export SFM2_SERVER_CONFIG=~/sfm2/instance/development.ini
           # DevOps tools shortcuts
           alias asm-source="source ~/prodsec/assembler/venv/bin/activate"
+          alias flawdb-shell="flawdb-source && python manage.py shell --settings=config.settings_shell"
           alias flawdb-source="source ~/prodsec/flawdb/venv/bin/activate"
           alias openstack-source="source ~/data/openstack/red-hat-product-security-openrc.sh"
           alias sfm2-db="sqlitebrowser ~/sfm2/instance/sfm2-database.sqlite"
@@ -99,6 +100,8 @@
               dir: "prodsec"
             - rep: "dashboard"
               dir: "devops"
+            - rep: "flawdb"
+              dir: "devops"
             - rep: "prodsec"
               dir: "devops"
             - rep: "product-definitions"
@@ -164,6 +167,9 @@
         - name: report failure
           debug:
             msg: "prodsec repo failure - check VPN connection"
+
+- name: flawdb setup
+  import_playbook: ansible-flawdb.yml
 
 - name: hexchat setup
   import_playbook: ansible-hexchat.yml
