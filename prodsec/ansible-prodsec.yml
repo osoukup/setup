@@ -30,7 +30,6 @@
           export SFM2_SERVER_CONFIG=~/sfm2/instance/development.ini
           # DevOps tools shortcuts
           alias asm-source="source ~/prodsec/assembler/venv/bin/activate"
-          alias flawdb-shell="flawdb-source && python manage.py shell --settings=config.settings_shell"
           alias flawdb-source="source ~/prodsec/flawdb/venv/bin/activate"
           alias openstack-source="source ~/data/openstack/red-hat-product-security-openrc.sh"
           alias sfm2-db="sqlitebrowser ~/sfm2/instance/sfm2-database.sqlite"
@@ -46,6 +45,13 @@
           alias sfm2-log-taskd="(less +F ~/sfm2/instance/logs/sfm2-taskd.log)"
           alias sfm2-log-gunicorn="(less +F ~/sfm2/instance/logs/gunicorn-error.log)"
           alias vdb="psql -h virtualdb.engineering.redhat.com -p 5432 -U srt -d srt"
+          # FlawDB shell
+          flawdb-shell() {
+            flawdb-source
+            export FLAW_DB_PORT=$(podman port flawdb-data | grep "5432/tcp" | awk '{split($0, a, ":"); print a[2]}')
+            python ~/prodsec/flawdb/manage.py shell --settings=config.settings_shell
+            deactivate
+          }
 
     # setup VPN - partially
     - name: install NetworkManager-openvpn
