@@ -9,6 +9,9 @@
     # BZ API key to setup venv variable
     - name: bz_api_key
       prompt: "Production BZ API key"
+    # Jira API token to setup venv variable
+    - name: jira_aut_token
+      prompt: "Production Jira API auth token"
   tasks:
     - name: check mandatory variables are defined
       assert:
@@ -55,7 +58,8 @@
                 path: "/home/{{ user }}/prodsec/flawdb/venv/bin/activate"
                 marker: "# {mark} flawdb ANSIBLE MANAGED BLOCK"
                 block: |
-                  export FLAWDB_BZ_API_KEY={{ bz_api_key }}
+                  export BZIMPORT_BZ_API_KEY={{ bz_api_key }}
+                  export JIRA_AUTH_TOKEN={{ jira_aut_token }}
                   export FLAW_DB_PASSWORD=passw0rd
           become_user: "{{ user }}"
           when: venv_dir.stat.exists == false
