@@ -41,32 +41,19 @@
               - tox
             state: present
 
-        - name: get venv stats
+        - name: get env file stats
           stat:
-            path: "/home/{{ user }}/prodsec/flawdb/venv"
-          register: venv_dir
-        - name: setup venv
-          block:
-            - name: create venv
-              shell: "python3 -m venv /home/{{ user }}/prodsec/flawdb/venv"
-            - name: install pip requirements
-              shell: "source /home/{{ user }}/prodsec/flawdb/venv/bin/activate; pip install -r /home/{{ user }}/prodsec/flawdb/requirements.txt -r /home/{{ user }}/prodsec/flawdb/devel-requirements.txt"
-            - name: install ipython to enhance flawdb shell
-              shell: "source /home/{{ user }}/prodsec/flawdb/venv/bin/activate; pip install ipython"
-            - name: set venv variables
-              blockinfile:
-                path: "/home/{{ user }}/prodsec/flawdb/venv/bin/activate"
-                marker: "# {mark} flawdb ANSIBLE MANAGED BLOCK"
-                block: |
-                  export BZIMPORT_BZ_API_KEY={{ bz_api_key }}
-                  export JIRA_AUTH_TOKEN={{ jira_aut_token }}
-                  export FLAW_DB_PASSWORD=passw0rd
+            path: "/home/{{ user }}/prodsec/flawdb/envvars"
+          register: env_file
+        - name: setup env file
+          copy:
+            dest: "/home/{{ user }}/prodsec/flawdb/envvars"
+            content: >
+              export BZIMPORT_BZ_API_KEY={{ bz_api_key }}
+              export JIRA_AUTH_TOKEN={{ jira_aut_token }}
+              export FLAW_DB_PASSWORD=passw0rd
           become_user: "{{ user }}"
-          when: venv_dir.stat.exists == false
-          rescue:
-            - name: VPN connection hint
-              debug:
-                msg: "failure - check VPN connection"
+          when: env_file.stat.exists == false
 
       when: flawdb_dir.stat.exists == true
     - name: report non-existing repo
