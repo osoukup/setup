@@ -1,9 +1,9 @@
-# RH PS FlawDB setup playbook
+# RH PS OSIDB setup playbook
 #
 #   full installation depends on ansible-prodsec.yml
-#   ansible-flawdb.yml
+#   ansible-osidb.yml
 ---
-- name: flawdb setup
+- name: osidb setup
   hosts: all
   vars_prompt:
     # BZ API key to setup venv variable
@@ -19,12 +19,12 @@
           - bz_api_key is defined
           - user is defined
 
-    # assume repository exists in ~/prodsec/flawdb
-    - name: get flawdb dir stats
+    # assume repository exists in ~/prodsec/osidb
+    - name: get osidb dir stats
       stat:
-        path: "/home/{{ user }}/prodsec/flawdb"
-      register: flawdb_dir
-    - name: setup flawdb
+        path: "/home/{{ user }}/prodsec/osidb"
+      register: osidb_dir
+    - name: setup osidb
       block:
         - name: install deps
           dnf:
@@ -43,20 +43,20 @@
 
         - name: get env file stats
           stat:
-            path: "/home/{{ user }}/prodsec/flawdb/envvars"
+            path: "/home/{{ user }}/prodsec/osidb/envvars"
           register: env_file
         - name: setup env file
           copy:
-            dest: "/home/{{ user }}/prodsec/flawdb/envvars"
+            dest: "/home/{{ user }}/prodsec/osidb/envvars"
             content: >
               export BZIMPORT_BZ_API_KEY={{ bz_api_key }}
               export JIRA_AUTH_TOKEN={{ jira_aut_token }}
-              export FLAW_DB_PASSWORD=passw0rd
+              export OSI_DB_PASSWORD=passw0rd
           become_user: "{{ user }}"
           when: env_file.stat.exists == false
 
-      when: flawdb_dir.stat.exists == true
+      when: osidb_dir.stat.exists == true
     - name: report non-existing repo
       fail:
-        msg: "flawdb repo does not exist"
-      when: flawdb_dir.stat.exists == false
+        msg: "osidb repo does not exist"
+      when: osidb_dir.stat.exists == false
