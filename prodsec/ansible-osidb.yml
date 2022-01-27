@@ -52,6 +52,8 @@
               export BZIMPORT_BZ_API_KEY={{ bz_api_key }}
               export JIRA_AUTH_TOKEN={{ jira_aut_token }}
               export OSI_DB_PASSWORD=passw0rd
+              export ROOT_CA_PATH="/home/osoukup/prodsec/sfm2/sfm2/backends/ps_data_server/rest/it-root-ca.pem"
+              export BZIMPORT_ENABLE_IMPORT_EMBARGOED=1
           become_user: "{{ user }}"
           when: env_file.stat.exists == false
 
