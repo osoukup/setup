@@ -177,9 +177,6 @@
 - name: osidb setup
   import_playbook: ansible-osidb.yml
 
-- name: hexchat setup
-  import_playbook: ansible-hexchat.yml
-
 - name: sfm2 setup
   import_playbook: ansible-sfm2.yml
 
