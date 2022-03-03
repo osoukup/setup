@@ -26,32 +26,33 @@
         path: "/home/{{ user }}/.bashrc"
         marker: "# {mark} prodsec ANSIBLE MANAGED BLOCK"
         block: |
-          # sfm2 config file
-          export SFM2_SERVER_CONFIG=~/sfm2/instance/development.ini
-          # DevOps tools shortcuts
+          # Assembler
           alias asm-source="source ~/prodsec/assembler/venv/bin/activate"
-          alias flawdb-source="source ~/prodsec/flawdb/venv/bin/activate"
-          alias openstack-source="source ~/data/openstack/red-hat-product-security-openrc.sh"
-          alias sfm2-db="sqlitebrowser ~/sfm2/instance/sfm2-database.sqlite"
-          alias sfm2-db-clear="rm ~/sfm2/instance/sfm2-database.sqlite"
-          alias sfm2-shell="(sfm2-source && python ~/sfm2/sfm2/shell.py)"
-          alias sfm2-source="source ~/sfm2/venv/bin/activate ; source ~/sfm2/cli/sfm2-completion.bash"
+          # OSIDB
+          alias osidb-restart-celery="podman container restart celery_host1 celery_host2 celery_beat"
+          alias osidb-source="source ~/prodsec/osidb/envvars ; source ~/prodsec/osidb/venv/bin/activate"
+          osidb-shell() {
+            osidb-source
+            export OSIDB_DB_PORT=$(podman port osidb-data | awk -F ':' '/5432/ { print $2 }')
+            python ~/prodsec/osidb/manage.py shell --settings=config.settings_shell
+            deactivate
+          }
+          # SFM2
+          export SFM2_SERVER_CONFIG=~/prodsec/sfm2/instance/development.ini
+          alias sfm2-db="sqlitebrowser ~/prodsec/sfm2/instance/sfm2-database.sqlite"
+          alias sfm2-db-clear="rm ~/prodsec/sfm2/instance/sfm2-database.sqlite"
+          alias sfm2-shell="(sfm2-source && python ~/prodsec/sfm2/sfm2/shell.py)"
+          alias sfm2-source="source ~/prodsec/sfm2/venv/bin/activate ; source ~/prodsec/sfm2/cli/sfm2-completion.bash"
           alias sfm2-activate="~/data/tools/sfm2-activate.sh"
           alias sfm2-deactivate="~/data/tools/sfm2-deactivate.sh"
           alias sfm2-instance-switch="~/data/tools/instance-switch.sh"
           alias sfm2-server="(sfm2-source && sfm-server --log-level=debug)"
           alias sfm2-taskd="(sfm2-source && sfm-taskd --debug)"
-          alias sfm2-log-server="(less +F ~/sfm2/instance/logs/sfm2-server.log)"
-          alias sfm2-log-taskd="(less +F ~/sfm2/instance/logs/sfm2-taskd.log)"
-          alias sfm2-log-gunicorn="(less +F ~/sfm2/instance/logs/gunicorn-error.log)"
+          alias sfm2-log-server="(less +F ~/prodsec/sfm2/instance/logs/sfm2-server.log)"
+          alias sfm2-log-taskd="(less +F ~/prodsec/sfm2/instance/logs/sfm2-taskd.log)"
+          alias sfm2-log-gunicorn="(less +F ~/prodsec/sfm2/instance/logs/gunicorn-error.log)"
+          # VDB
           alias vdb="psql -h virtualdb.engineering.redhat.com -p 5432 -U srt -d srt"
-          # FlawDB shell
-          flawdb-shell() {
-            flawdb-source
-            export FLAW_DB_PORT=$(podman port flawdb-data | grep "5432/tcp" | awk '{split($0, a, ":"); print a[2]}')
-            python ~/prodsec/flawdb/manage.py shell --settings=config.settings_shell
-            deactivate
-          }
 
     # setup VPN - partially
     - name: install NetworkManager-openvpn
@@ -106,7 +107,7 @@
               dir: "prodsec"
             - rep: "dashboard"
               dir: "devops"
-            - rep: "flawdb"
+            - rep: "osidb"
               dir: "devops"
             - rep: "prodsec"
               dir: "devops"
@@ -118,13 +119,6 @@
               dir: "prodsec"
             - rep: "sfm2"
               dir: "devops"
-        - name: setup ~/sfm2 symlink
-          file:
-            src: "/home/{{ user }}/prodsec/sfm2"
-            dest: "/home/{{ user }}/sfm2"
-            state: link
-            force: true
-          become_user: "{{ user }}"
         - name: get new .sfm2clientrc stats
           stat:
             path: "/home/{{ user }}/data/config/dot-sfm2clientrc"
