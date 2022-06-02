@@ -136,6 +136,21 @@
           debug:
             msg: "prodsec repo failure - check VPN connection"
 
+    - name: install stuff from prodsec repo
+      block:
+        - name: install prodsec repo
+          dnf:
+            name: https://prodsec.redhat.com/yum/prodsec-repo-latest.all.noarch.rpm
+            state: present
+            disable_gpg_check: true
+        - name: install rh-signing-tools-lite
+          dnf:
+            name: rh-signing-tools-lite
+            state: present
+      rescue:
+        - name: report failure
+          debug:
+            msg: "prodsec repo failure - check VPN connection"
     - name: install development stuff
       dnf:
         name:
@@ -152,21 +167,6 @@
           - rpmdevtools
           - vdbqb
         state: present
-    - name: install stuff from prodsec repo
-      block:
-        - name: install prodsec repo
-          dnf:
-            name: https://prodsec.redhat.com/yum/prodsec-repo-latest.all.noarch.rpm
-            state: present
-            disable_gpg_check: true
-        - name: install rh-signing-tools-lite
-          dnf:
-            name: rh-signing-tools-lite
-            state: present
-      rescue:
-        - name: report failure
-          debug:
-            msg: "prodsec repo failure - check VPN connection"
 
 - name: osidb setup
   import_playbook: ansible-osidb.yml
