@@ -5,18 +5,10 @@
 ---
 - name: osidb setup
   hosts: all
-  vars_prompt:
-    # BZ API key to setup venv variable
-    - name: bz_api_key
-      prompt: "Production BZ API key"
-    # Jira API token to setup venv variable
-    - name: jira_aut_token
-      prompt: "Production Jira API auth token"
   tasks:
     - name: check mandatory variables are defined
       assert:
         that:
-          - bz_api_key is defined
           - user is defined
 
     # assume repository exists in ~/prodsec/osidb
@@ -41,21 +33,12 @@
               - tox
             state: present
 
-        - name: get env file stats
-          stat:
-            path: "/home/{{ user }}/prodsec/osidb/envvars"
-          register: env_file
         - name: setup env file
-          copy:
-            dest: "/home/{{ user }}/prodsec/osidb/envvars"
-            content: >
-              export BZIMPORT_BZ_API_KEY={{ bz_api_key }}
-              export JIRA_AUTH_TOKEN={{ jira_aut_token }}
-              export OSIDB_DB_PASSWORD=passw0rd
-              export ROOT_CA_PATH="/home/osoukup/prodsec/sfm2/sfm2/backends/ps_data_server/rest/it-root-ca.pem"
-              export BZIMPORT_ENABLE_IMPORT_EMBARGOED=1
+          file:
+            src: "/home/{{ user }}/data/config/dot-env"
+            dest: "/home/{{ user }}/prodsec/osidb/.env"
+            state: link
           become_user: "{{ user }}"
-          when: env_file.stat.exists == false
 
       when: osidb_dir.stat.exists == true
     - name: report non-existing repo
