@@ -22,6 +22,9 @@
         block: |
           # ranger shortcut
           alias r="ranger"
+          # use 256 collor scheme to
+          # prevent ranger from crash
+          export TERM=xterm-256color
 
     - name: create default ranger configs
       command: "ranger --copy-config=all"
