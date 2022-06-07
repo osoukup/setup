@@ -80,10 +80,10 @@
     - name: install browsers
       dnf:
         name:
-          # TODO google chrome
-          # https://www.if-not-true-then-false.com/2010/install-google-chrome-with-yum-on-fedora-red-hat-rhel/
           - firefox
+          - google-chrome-stable
         state: present
+        enablerepo: google-chrome
 
     # installing vlc
     # requires rmpfusion
