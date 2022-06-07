@@ -18,9 +18,6 @@
 - name: keys setup
   import_playbook: ansible-keys.yml
 
-- name: prodsec setup
-  import_playbook: prodsec/ansible-prodsec.yml
-
 - name: random setup
   import_playbook: ansible-random.yml
 
@@ -35,3 +32,8 @@
 
 - name: wiki setup
   import_playbook: wiki/ansible-wiki.yml
+
+# postpone this to the end
+# non-vital and semi-manual
+- name: prodsec setup
+  import_playbook: prodsec/ansible-prodsec.yml
