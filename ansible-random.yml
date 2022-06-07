@@ -112,13 +112,51 @@
         name:
           - gnome-tweak-tool
           - dconf-editor
+          - python3-psutil  # needed for dconf in the next step
         state: present
     - name: setup GNOME config
-      shell: /home/{{ user }}/data/config/gnome-config.sh
+      dconf:
+        key: "{{ item.key }}"
+        value: "{{ item.val }}"
+        state: present
       become_user: "{{ user }}"
-      # TODO seems to stop working in Ansible
-      # TODO implement some change recognition
-      changed_when: false
+      loop:
+        # remap keys
+        - key: "/org/gnome/desktop/wm/keybindings/close"
+          val: "['<Alt>q', '<Alt>F4']"
+        - key: "/org/gnome/desktop/wm/keybindings/move-to-workspace-down"
+          val: "['<Super><Shift>Page_Down', '<Control><Shift><Alt>Down', '<Control><Shift><Alt>k']"
+        - key: "/org/gnome/desktop/wm/keybindings/move-to-workspace-left"
+          val: "['<Control><Shift><Alt>Left', '<Control><Shift><Alt>j']"
+        - key: "/org/gnome/desktop/wm/keybindings/move-to-workspace-right"
+          val: "['<Control><Shift><Alt>Right', '<Control><Shift><Alt>uring']"
+        - key: "/org/gnome/desktop/wm/keybindings/move-to-workspace-up"
+          val: "['<Super><Shift>Page_Up', '<Control><Shift><Alt>Up', '<Control><Shift><Alt>l']"
+        - key: "/org/gnome/desktop/wm/keybindings/switch-to-workspace-down"
+          val: "['<Super>Page_Down', '<Control><Alt>Down', '<Control><Alt>k']"
+        - key: "/org/gnome/desktop/wm/keybindings/switch-to-workspace-left"
+          val: "['<Control><Alt>Left', '<Control><Alt>j']"
+        - key: "/org/gnome/desktop/wm/keybindings/switch-to-workspace-right"
+          val: "['<Control><Alt>Right', '<Control><Alt>uring']"
+        - key: "/org/gnome/desktop/wm/keybindings/switch-to-workspace-up"
+          val: "['<Super>Page_Up', '<Control><Alt>Up', '<Control><Alt>l']"
+        # set max 4 workspaces
+        - key: "/org/gnome/desktop/wm/preferences/num-workspaces"
+          val: "4"
+        - key: "/org/gnome/mutter/dynamic-workspaces"
+          val: "false"
+        # and alt+tab workspace isolated
+        - key: "/org/gnome/shell/app-switcher/current-workspace-only"
+          val: "true"
+        # turn off alert sound
+        - key: "/org/gnome/desktop/sound/event-sounds"
+          val: "false"
+        # allow 100%+ volume
+        - key: "/org/gnome/desktop/sound/allow-volume-above-100-percent"
+          val: "true"
+        # alt-tab on the current workspace only
+        - key: "/org/gnome/shell/app-switcher/current-workspace-only"
+          val: "true"
 
     # install and setup development tools
     - name: create ~/.did
