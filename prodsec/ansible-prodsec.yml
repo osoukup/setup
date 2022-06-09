@@ -28,6 +28,8 @@
         block: |
           # Assembler
           alias asm-source="source ~/prodsec/assembler/venv/bin/activate"
+          # OCP
+          alias ocp-login="oc login --username=osoukup --server=https://api.ocp.prodsec.psi.redhat.com:6443"
           # OSIDB
           alias osidb-restart-celery="podman container restart celery_host1 celery_host2 celery_beat"
           alias osidb-source="source ~/prodsec/osidb/.env ; source ~/prodsec/osidb/venv/bin/activate"
