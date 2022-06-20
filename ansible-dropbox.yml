@@ -25,6 +25,15 @@
         name: dropbox
         state: present
 
+    # installing browsers to allow manual Dropbox login
+    - name: install browsers
+      dnf:
+        name:
+          - firefox
+          - google-chrome-stable
+        state: present
+        enablerepo: google-chrome
+
     # login into the Dropbox manually in browser through Google login
     # start with : dropbox start -i : and follow the instuctions
 

@@ -77,14 +77,6 @@
         name: bat
         state: present
 
-    - name: install browsers
-      dnf:
-        name:
-          - firefox
-          - google-chrome-stable
-        state: present
-        enablerepo: google-chrome
-
     # installing vlc
     # requires rmpfusion
     - name: get Fedora version
