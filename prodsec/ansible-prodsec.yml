@@ -15,11 +15,6 @@
         path: "/home/{{ user }}/prodsec"
         state: directory
       become_user: "{{ user }}"
-    - name: create ~/prodsec-people
-      file:
-        path: "/home/{{ user }}/prodsec-people"
-        state: directory
-      become_user: "{{ user }}"
 
     - name: setup prodsec aliases
       blockinfile:
