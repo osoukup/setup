@@ -11,37 +11,32 @@
         that:
           - user is defined
 
-    # assume repository exists in ~/prodsec/osidb
-    - name: get osidb dir stats
-      stat:
-        path: "/home/{{ user }}/prodsec/osidb"
-      register: osidb_dir
-    - name: setup osidb
-      block:
-        - name: install deps
-          dnf:
-            name:
-              - gcc
-              - krb5-devel
-              - libpq-devel
-              - make
-              - openldap-devel
-              - podman
-              - podman-compose
-              - python3
-              - python3-devel
-              - tox
-            state: present
+    - name: clone OSIDB git repo
+      git:
+        repo: "git@github.com:RedHatProductSecurity/osidb.git"
+        dest: "/home/{{ user }}/prodsec/osidb"
+        accept_hostkey: yes
+        key_file: "/home/{{ user }}/.ssh/auto-install-key"
+      become_user: "{{ user }}"
 
-        - name: setup env file
-          file:
-            src: "/home/{{ user }}/data/config/dot-env"
-            dest: "/home/{{ user }}/prodsec/osidb/.env"
-            state: link
-          become_user: "{{ user }}"
+    - name: install deps
+      dnf:
+        name:
+          - gcc
+          - krb5-devel
+          - libpq-devel
+          - make
+          - openldap-devel
+          - podman
+          - podman-compose
+          - python3
+          - python3-devel
+          - tox
+        state: present
 
-      when: osidb_dir.stat.exists == true
-    - name: report non-existing repo
-      fail:
-        msg: "osidb repo does not exist"
-      when: osidb_dir.stat.exists == false
+    - name: setup env file
+      file:
+        src: "/home/{{ user }}/data/config/dot-env"
+        dest: "/home/{{ user }}/prodsec/osidb/.env"
+        state: link
+      become_user: "{{ user }}"
