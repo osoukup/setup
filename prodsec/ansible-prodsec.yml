@@ -25,6 +25,7 @@
           alias asm-source="source ~/prodsec/assembler/venv/bin/activate"
           # OCP
           alias ocp-login="oc login --username=osoukup --server=https://api.ocp.prodsec.psi.redhat.com:6443"
+          source <(oc completion bash)
           # OSIDB
           alias osidb-restart-celery="podman container restart celery_host1 celery_host2 celery_beat"
           alias osidb-source="source ~/prodsec/osidb/.env ; source ~/prodsec/osidb/venv/bin/activate"
@@ -179,6 +180,23 @@
           - rpmdevtools
           - vdbqb
         state: present
+
+    # oc needs to be setup manually as the download link is temporary
+    # download tar archive | extract | mv to /usr/bin
+    # tab completions are defined in .bashrc
+
+    - name: register origin client file
+      stat:
+        path: "/usr/bin/oc"
+      register: oc_file
+    - name: check origin client file exists
+      assert:
+        that:
+          - oc_file.stat.exists == true
+          - oc_file.stat.isreg is defined and oc_file.stat.isreg
+        fail_msg: >
+          install oc manually following the procedure described at
+          https://docs.openshift.com/container-platform/4.7/cli_reference/openshift_cli/getting-started-cli.html#cli-installing-cli_cli-developer-commands
 
 - name: osidb setup
   import_playbook: ansible-osidb.yml
