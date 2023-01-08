@@ -23,6 +23,7 @@
           alias ta="tmux attach -t"
           alias tl="tmux ls"
           alias tn="tmux new -s"
+          alias tu="~/data/tmux/tmux-url-select/tmux-url-select.pl"
     - name: setup tmux plugin manager
       git:
         repo: "https://github.com/tmux-plugins/tpm.git"
