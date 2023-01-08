@@ -165,6 +165,7 @@
           - jq
           - make
           - meld
+          - tldr
           - vagrant
         state: present
     - name: install rhpaste
