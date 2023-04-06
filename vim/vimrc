@@ -54,6 +54,9 @@ vnoremap <leader>y "+y
 " most recent yank paste
 " ctrl+c ctrl+v substitution
 noremap <leader>p "0p
+" Python debugger
+" t - trace
+noremap <leader>t Oimport pdb<Enter>pdb.set_trace()<Enter>print<Esc>
 
 " STATUS LINE
 "
