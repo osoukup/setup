@@ -103,6 +103,7 @@ let g:ctrlp_custom_ignore = 'flask\|node_modules\|venv'
 " search for word under cursor
 " <cword> stands for current word
 " <bar> stands for vertical bar separator
+:set wildignore+=local-server.crt,local-server.key
 noremap <leader>s :execute "vimgrep /" . expand("<cword>") . "/j **" <bar> cw<CR>
 " however ignore useless directories
 :set wildignore+=flask/**,**node_modules/**,venv/**
