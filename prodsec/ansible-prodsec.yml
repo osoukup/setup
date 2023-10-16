@@ -154,10 +154,6 @@
             name: https://prodsec.redhat.com/yum/prodsec-repo-latest.all.noarch.rpm
             state: present
             disable_gpg_check: true
-        - name: install rh-signing-tools-lite
-          dnf:
-            name: rh-signing-tools-lite
-            state: present
       rescue:
         - name: report failure
           debug:
