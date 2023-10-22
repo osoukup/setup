@@ -80,6 +80,25 @@
                 state: link
           become_user: "{{ user }}"
 
+        - name: setup aliases
+          blockinfile:
+            path: "/home/{{ user }}/.bashrc"
+            marker: "# {mark} SFM2 ANSIBLE MANAGED BLOCK"
+            block: |
+              export SFM2_SERVER_CONFIG=~/prodsec/sfm2/instance/development.ini
+              alias sfm2-db="sqlitebrowser ~/prodsec/sfm2/instance/sfm2-database.sqlite"
+              alias sfm2-db-clear="rm ~/prodsec/sfm2/instance/sfm2-database.sqlite"
+              alias sfm2-shell="(sfm2-source && python ~/prodsec/sfm2/sfm2/shell.py)"
+              alias sfm2-source="source ~/prodsec/sfm2/venv/bin/activate ; source ~/prodsec/sfm2/cli/sfm2-completion.bash"
+              alias sfm2-activate="~/data/tools/sfm2-activate.sh"
+              alias sfm2-deactivate="~/data/tools/sfm2-deactivate.sh"
+              alias sfm2-instance-switch="~/data/tools/sfm2-instance-switch.sh"
+              alias sfm2-server="(sfm2-source && sfm-server --log-level=debug)"
+              alias sfm2-taskd="(sfm2-source && sfm-taskd --debug)"
+              alias sfm2-log-server="(less +F ~/prodsec/sfm2/instance/logs/sfm2-server.log)"
+              alias sfm2-log-taskd="(less +F ~/prodsec/sfm2/instance/logs/sfm2-taskd.log)"
+              alias sfm2-log-gunicorn="(less +F ~/prodsec/sfm2/instance/logs/gunicorn-error.log)"
+
       when: sfm2_dir.stat.exists == true
     - name: report non-existing repo
       fail:

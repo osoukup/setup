@@ -40,3 +40,21 @@
         dest: "/home/{{ user }}/prodsec/osidb/.env"
         state: link
       become_user: "{{ user }}"
+
+    - name: setup aliases
+      blockinfile:
+        path: "/home/{{ user }}/.bashrc"
+        marker: "# {mark} OSIDB ANSIBLE MANAGED BLOCK"
+        block: |
+          alias osidb-instance-switch="~/data/tools/osidb-instance-switch.sh"
+          alias osidb-restart-celery="podman container restart celery_host1 celery_host2 celery_beat"
+          alias osidb-source="source ~/prodsec/osidb/.env ; source ~/prodsec/osidb/venv/bin/activate"
+          alias osidb-token-local="source ~/data/tools/osidbtoken ; osidbtoken local"
+          alias osidb-token-prod="source ~/data/tools/osidbtoken ; osidbtoken prod"
+          alias osidb-token-stage="source ~/data/tools/osidbtoken ; osidbtoken stage"
+          osidb-shell() {
+            osidb-source
+            export OSIDB_DB_PORT=$(podman port osidb-data | awk -F ':' '/5432/ { print $2 }')
+            python ~/prodsec/osidb/manage.py shell --settings=config.settings_shell
+            deactivate
+          }
