@@ -167,17 +167,18 @@
           - vdbqb
         state: present
 
-    - name: network proxy setup
-      dconf:
-        key: "{{ item.key }}"
-        value: "{{ item.val }}"
-        state: present
-      become_user: "{{ user }}"
-      loop:
-        - key: "org/gnome/system/proxy/mode"
-          val: "auto"
-        - key: "org/gnome/system/proxy/autoconfig-url"
-          val: "https://gitlab.corp.redhat.com/pac/proxy-pac/-/raw/main/proxy.pac"
+    # TODO this got broken
+    # - name: network proxy setup
+    #   dconf:
+    #     key: "{{ item.key }}"
+    #     value: "{{ item.val }}"
+    #     state: present
+    #   become_user: "{{ user }}"
+    #   loop:
+    #     - key: "/org/gnome/system/proxy/mode"
+    #       val: "auto"
+    #     - key: "/org/gnome/system/proxy/autoconfig-url"
+    #       val: "https://gitlab.corp.redhat.com/pac/proxy-pac/-/raw/main/proxy.pac"
 
 - name: osidb setup
   import_playbook: ansible-osidb.yml
