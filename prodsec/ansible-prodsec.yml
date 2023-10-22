@@ -185,6 +185,3 @@
 
 - name: sfm2 setup
   import_playbook: ansible-sfm2.yml
-
-- name: assembler setup
-  import_playbook: ansible-assembler.yml
