@@ -51,12 +51,6 @@
               debug:
                 msg: "failure - check VPN connection"
 
-        - name: install RPM devel requirements
-          dnf:
-            name: "{{ item }}"
-            state: present
-          with_lines: cat "/home/{{ user }}/prodsec/sfm2/rpm-devel-requirements.txt"
-
         - name: create sfm2 log directory
           file:
             path: "/home/{{ user }}/log/sfm2"
