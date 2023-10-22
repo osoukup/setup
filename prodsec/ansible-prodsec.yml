@@ -41,7 +41,7 @@
           alias sfm2-source="source ~/prodsec/sfm2/venv/bin/activate ; source ~/prodsec/sfm2/cli/sfm2-completion.bash"
           alias sfm2-activate="~/data/tools/sfm2-activate.sh"
           alias sfm2-deactivate="~/data/tools/sfm2-deactivate.sh"
-          alias sfm2-instance-switch="~/data/tools/instance-switch.sh"
+          alias sfm2-instance-switch="~/data/tools/sfm2-instance-switch.sh"
           alias sfm2-server="(sfm2-source && sfm-server --log-level=debug)"
           alias sfm2-taskd="(sfm2-source && sfm-taskd --debug)"
           alias sfm2-log-server="(less +F ~/prodsec/sfm2/instance/logs/sfm2-server.log)"
