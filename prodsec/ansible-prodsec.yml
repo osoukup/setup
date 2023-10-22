@@ -167,23 +167,6 @@
           - vdbqb
         state: present
 
-    # oc needs to be setup manually as the download link is temporary
-    # download tar archive | extract | mv to /usr/bin
-    # tab completions are defined in .bashrc
-
-    - name: register origin client file
-      stat:
-        path: "/usr/bin/oc"
-      register: oc_file
-    - name: check origin client file exists
-      assert:
-        that:
-          - oc_file.stat.exists == true
-          - oc_file.stat.isreg is defined and oc_file.stat.isreg
-        fail_msg: >
-          install oc manually following the procedure described at
-          https://docs.openshift.com/container-platform/4.7/cli_reference/openshift_cli/getting-started-cli.html#cli-installing-cli_cli-developer-commands
-
     - name: network proxy setup
       dconf:
         key: "{{ item.key }}"
