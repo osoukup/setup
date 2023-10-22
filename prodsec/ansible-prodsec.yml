@@ -97,32 +97,31 @@
     - name: setup prodsec repositories
       block:
         # TODO key authentication does not work
-        - name: clone repo to dir
+        - name: clone cee repo to dir
           git:
-            repo: "git@git.prodsec.redhat.com:{{ item.dir }}/{{ item.rep }}.git"
+            repo: "git@gitlab.cee.redhat.com:{{ item.dir }}/{{ item.rep }}.git"
             dest: "/home/{{ user }}/prodsec/{{ item.rep }}"
             accept_hostkey: yes
             key_file: "/home/{{ user }}/.ssh/id_rsa"
           become_user: "{{ user }}"
           loop:
-            - rep: "assembler"
-              dir: "devops"
-            - rep: "autobots"
-              dir: "devops"
-            - rep: "checklists"
-              dir: "prodsec"
             - rep: "dashboard"
-              dir: "devops"
+              dir: "prodsec-dev"
             - rep: "prodsec"
-              dir: "devops"
+              dir: "prodsec-dev"
             - rep: "product-definitions"
               dir: "prodsec"
             - rep: "ps-constants"
-              dir: "devops"
-            - rep: "public-slide-decks"
-              dir: "prodsec"
+              dir: "prodsec-dev"
             - rep: "sfm2"
-              dir: "devops"
+              dir: "prodsec-dev"
+        - name: clone corp repo to dir
+          git:
+            repo: "git@gitlab.corp.redhat.com/product-security/dev/osidb-ops"
+            dest: "/home/{{ user }}/prodsec/osidb-ops"
+            accept_hostkey: yes
+            key_file: "/home/{{ user }}/.ssh/id_rsa"
+          become_user: "{{ user }}"
         - name: get new .sfm2clientrc stats
           stat:
             path: "/home/{{ user }}/data/config/dot-sfm2clientrc"
