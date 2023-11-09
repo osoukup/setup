@@ -148,6 +148,12 @@
     #     - key: "/org/gnome/system/proxy/autoconfig-url"
     #       val: "https://gitlab.corp.redhat.com/pac/proxy-pac/-/raw/main/proxy.pac"
 
+    - name: install Slack
+      dnf:
+        name: https://downloads.slack-edge.com/releases/linux/4.35.121/prod/x64/slack-4.35.121-0.1.el8.x86_64.rpm
+        state: present
+        disable_gpg_check: true
+
 - name: griffon setup
   import_playbook: ansible-griffon.yml
 
