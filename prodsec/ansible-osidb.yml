@@ -58,3 +58,8 @@
             python ~/prodsec/osidb/manage.py shell --settings=config.settings_shell
             deactivate
           }
+
+    - name: workaround LDAP library build error
+      copy:
+        dest: "/usr/lib64/libldap_r.so"
+        content: "INPUT ( libldap.so )"
