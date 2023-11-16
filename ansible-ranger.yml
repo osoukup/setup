@@ -41,3 +41,13 @@
           map k    move down=1
           map j    move left=1
           map ů    move right=1
+
+    - name: |
+        setup ranger stuff in rifle.conf
+        controling the apps to open with
+      blockinfile:
+        path: "/home/{{ user }}/.config/ranger/rifle.conf"
+        marker: "# {mark} ranger ANSIBLE MANAGED BLOCK"
+        block: |
+          # custom apps to open with
+          ext MTS = vlc "$1"
