@@ -19,6 +19,17 @@
         key_file: "/home/{{ user }}/.ssh/auto-install-key"
       become_user: "{{ user }}"
 
+    - name: setup git commit signing
+      blockinfile:
+        path: "/home/{{ user }}/prodsec/osidb/.git/config"
+        marker: "# {mark} OSIDB ANSIBLE MANAGED BLOCK"
+        block: |
+          [commit]
+              gpgsign = true
+          [user]
+              # public description of the key
+              signingkey = 2F1CC5EDF7B348AF
+
     - name: install deps
       dnf:
         name:
