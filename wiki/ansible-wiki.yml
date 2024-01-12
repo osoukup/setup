@@ -28,3 +28,23 @@
         name: wiki.service
         state: started
         enabled: yes
+
+    - name: ensure error log file exists
+      file:
+        path: "/home/{{ user }}/log/TiddlyWiki/node.err"
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        state: touch
+        mode: 0644
+        access_time: preserve
+        modification_time: preserve
+
+    - name: ensure output log file exists
+      file:
+        path: "/home/{{ user }}/log/TiddlyWiki/node.out"
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        state: touch
+        mode: 0644
+        access_time: preserve
+        modification_time: preserve
