@@ -143,8 +143,5 @@
         state: present
         disable_gpg_check: true
 
-- name: griffon setup
-  import_playbook: ansible-griffon.yml
-
 - name: osidb setup
   import_playbook: ansible-osidb.yml
