@@ -133,7 +133,6 @@
           - gitk
           - sqlitebrowser
           - rpmdevtools
-          - vdbqb
         state: present
 
     # TODO this got broken
