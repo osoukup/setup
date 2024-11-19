@@ -35,7 +35,7 @@
         owner: "{{ user }}"
         group: "{{ user }}"
         state: directory
-        mode: 0644
+        mode: 0655
         access_time: preserve
         modification_time: preserve
 
