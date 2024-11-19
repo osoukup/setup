@@ -149,6 +149,9 @@
         # alt-tab on the current workspace only
         - key: "/org/gnome/shell/app-switcher/current-workspace-only"
           val: "true"
+        # no colored terminal status reporting
+        - key: "/org/gnome/Ptyxis/visual-process-leader"
+          val: "false"
 
     # install and setup development tools
     - name: create ~/.did
