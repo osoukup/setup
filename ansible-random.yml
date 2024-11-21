@@ -69,6 +69,10 @@
         force: true
       become_user: "{{ user }}"
       when: new_start.stat.exists == true
+    - name: install gnome-terminal
+      dnf:
+        name: gnome-terminal
+        state: present
 
     # install bat
     # otherwise cat does not work due to alias
