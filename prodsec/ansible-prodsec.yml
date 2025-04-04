@@ -96,10 +96,9 @@
     #       val: "https://gitlab.corp.redhat.com/pac/proxy-pac/-/raw/main/proxy.pac"
 
     - name: install Slack
-      dnf:
-        name: https://downloads.slack-edge.com/releases/linux/4.35.121/prod/x64/slack-4.35.121-0.1.el8.x86_64.rpm
+      community.general.snap:
+        name: slack
         state: present
-        disable_gpg_check: true
 
 - name: osidb setup
   import_playbook: ansible-osidb.yml
