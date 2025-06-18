@@ -136,6 +136,10 @@
           val: "['<Control><Alt>Right', '<Control><Alt>uring']"
         - key: "/org/gnome/desktop/wm/keybindings/switch-to-workspace-up"
           val: "['<Super>Page_Up', '<Control><Alt>Up', '<Control><Alt>l']"
+        - key: "/org/gnome/settings-daemon/plugins/media-keys/logout"
+          val: "['']"  # unbind logout as it may be on ctrl+alt+delete
+        - key: "/org/gnome/settings-daemon/plugins/media-keys/shutdown"
+          val: "['<Control><Alt>Delete']"
         # set max 4 workspaces
         - key: "/org/gnome/desktop/wm/preferences/num-workspaces"
           val: "4"
