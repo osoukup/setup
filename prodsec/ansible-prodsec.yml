@@ -10,13 +10,6 @@
         that:
           - user is defined
 
-    # TODO RHEL8 repo is no more
-    # - name: create ~/prodsec
-    #   file:
-    #     path: "/home/{{ user }}/prodsec"
-    #     state: directory
-    #   become_user: "{{ user }}"
-
     # setup Kerberos
     - name: install krb5-workstation
       dnf:
