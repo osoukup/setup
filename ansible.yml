@@ -2,6 +2,7 @@
 # one playbook to rule them all
 #
 #   ansible.yml
+#   --extra-vars scope=work|home|none
 ---
 - name: dropbox setup
   import_playbook: ansible-dropbox.yml
@@ -11,6 +12,7 @@
 
 - name: fun setup
   import_playbook: ansible-fun.yml
+  when: scope == "home"
 
 - name: git setup
   import_playbook: ansible-git.yml
@@ -37,3 +39,4 @@
 # non-vital and semi-manual
 - name: prodsec setup
   import_playbook: prodsec/ansible-prodsec.yml
+  when: scope == "work"

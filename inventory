@@ -2,4 +2,5 @@
 localhost
 
 [servers:vars]
+scope=none
 user=osoukup
