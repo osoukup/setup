@@ -158,15 +158,9 @@
           val: "false"
 
     # install and setup development tools
-    - name: create ~/.did
-      file:
-        path: "/home/{{ user }}/.did"
-        state: directory
-      become_user: "{{ user }}"
     - name: install development tools
       dnf:
         name:
-          - did
           - gcc
           - httpie
           - jq
