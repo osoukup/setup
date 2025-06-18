@@ -7,6 +7,11 @@
 - name: dropbox setup
   import_playbook: ansible-dropbox.yml
 
+# includes keyboard reconfig
+# which should get priority
+- name: random setup
+  import_playbook: ansible-random.yml
+
 - name: dir setup
   import_playbook: ansible-dir.yml
 
@@ -19,9 +24,6 @@
 
 - name: keys setup
   import_playbook: ansible-keys.yml
-
-- name: random setup
-  import_playbook: ansible-random.yml
 
 - name: ranger setup
   import_playbook: ansible-ranger.yml
