@@ -17,29 +17,6 @@
     #     state: directory
     #   become_user: "{{ user }}"
 
-    # # setup VPN
-    # - name: install NetworkManager-openvpn
-    #   dnf:
-    #     name: NetworkManager-openvpn
-    #     state: present
-    # - name: install NetworkManager-openvpn-gnome
-    #   dnf:
-    #     name: NetworkManager-openvpn-gnome
-    #     state: present
-    # - name: install redhat-internal-cert
-    #   dnf:
-    #     name: "https://hdn.corp.redhat.com/rhel8-csb/RPMS/noarch/redhat-internal-cert-install-0.1-25.el7.noarch.rpm"
-    #     state: present
-    # - name: import RHEL8 RPM GPG KEY
-    #   rpm_key:
-    #     key: "https://hdn.corp.redhat.com/rhel8-csb/RPM-GPG-KEY-helpdesk"
-    #     state: present
-    # - name: install redhat-internal-NetworkManager-openvpn-profiles
-    #   dnf:
-    #     name: redhat-internal-NetworkManager-openvpn-profiles
-    #     enablerepo: "https://hdn.corp.redhat.com/rhel8-csb/rhel8-csb.repo"
-    #     state: present
-
     # setup Kerberos
     - name: install krb5-workstation
       dnf:
