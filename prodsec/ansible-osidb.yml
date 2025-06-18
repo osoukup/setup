@@ -35,7 +35,6 @@
         name:
           - gcc
           - krb5-devel
-          - libpq-devel
           - make
           - openldap-devel
           - podman
