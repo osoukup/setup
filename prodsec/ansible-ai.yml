@@ -1,0 +1,34 @@
+# RH PS AI setup playbook
+#
+#   full installation depends on ansible-prodsec.yml
+#   ansible-ai.yml
+---
+- name: AI setup
+  hosts: all
+  tasks:
+    - name: check mandatory variables are defined
+      assert:
+        that:
+          - user is defined
+
+    - name: ensure npm is installed
+      package:
+        name: npm
+        state: present
+
+    # https://github.com/google-gemini/gemini-cli
+    - name: install Gemini CLI
+      npm:
+        global: yes
+        name: "@google/gemini-cli"
+        state: present
+
+    - name: setup AI stuff in .bashrc
+      blockinfile:
+        path: "/home/{{ user }}/.bashrc"
+        marker: "# {mark} AI ANSIBLE MANAGED BLOCK"
+        block: |
+          # export Gemini key in the env variable
+          export GEMINI_API_KEY="$(cat ~/data/keys/osoukup-gemini.txt)"
+          # tmux-session command
+          alias tmux-gemini="~/data/tools/gemini.sh"
