@@ -11,9 +11,43 @@
         that:
           - user is defined
 
+    # install gcloud CLI
+    - name: create config file
+      ansible.builtin.blockinfile:
+        path: /etc/yum.repos.d/google-cloud-sdk.repo
+        marker: "# {mark} AI ANSIBLE MANAGED BLOCK"
+        block: |
+          [google-cloud-cli]
+          name=Google Cloud CLI
+          baseurl=https://packages.cloud.google.com/yum/repos/cloud-sdk-el10-x86_64
+          enabled=1
+          gpgcheck=1
+          repo_gpgcheck=0
+          gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key-v10.gpg
+        create: true
+        state: present
+    - name: install gcloud CLI
+      dnf:
+        name:
+          - libxcrypt-compat.x86_64
+          - google-cloud-cli
+    - name: remind about the init
+      ansible.builtin.debug:
+        msg: |
+          Make sure to run:
+            gcloud init
+            gcloud auth application-default login
+            gcloud auth application-default set-quota-project cloudability-it-gemini
+
     - name: ensure npm is installed
       package:
         name: npm
+        state: present
+
+    - name: install Claude CLI
+      npm:
+        global: yes
+        name: "@anthropic-ai/claude-code"
         state: present
 
     # https://github.com/google-gemini/gemini-cli
@@ -28,7 +62,12 @@
         path: "/home/{{ user }}/.bashrc"
         marker: "# {mark} AI ANSIBLE MANAGED BLOCK"
         block: |
+          # export Claude key in the env variables
+          export CLAUDE_CODE_USE_VERTEX=1
+          export CLOUD_ML_REGION=us-east5
+          export ANTHROPIC_VERTEX_PROJECT_ID=itpc-gcp-prodsec-eng-claude
           # export Gemini key in the env variable
           export GEMINI_API_KEY="$(cat ~/data/keys/osoukup-gemini.txt)"
-          # tmux-session command
+          # tmux-session commands
+          alias tmux-claude="~/data/tools/claude.sh"
           alias tmux-gemini="~/data/tools/gemini.sh"
