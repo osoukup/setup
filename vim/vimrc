@@ -25,6 +25,9 @@ set number
 " do not cut long lines
 set nowrap
 
+" fold by syntax
+set foldmethod=syntax
+
 " scroll offset
 " cursor verticaly centered
 set scrolloff=999
