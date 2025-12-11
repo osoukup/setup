@@ -173,11 +173,6 @@
           - tldr
           - vagrant
         state: present
-    - name: install rhpaste
-      ansible.builtin.pip:
-        name: rhpaste
-        extra_args: --user
-      become_user: "{{ user }}"
 
     - name: check boot menu timeout
       ansible.builtin.lineinfile:
