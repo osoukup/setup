@@ -191,7 +191,9 @@
             replace: "GRUB_TIMEOUT=0"
         - name: update grub2 config
           ansible.builtin.shell: grub2-mkconfig -o /boot/grub2/grub.cfg
-      when: out.changed
+      when:
+        - out.changed
+        - scope == "work"
 
     - name: install random graphical stuff
       dnf:
