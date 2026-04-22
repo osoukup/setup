@@ -64,7 +64,7 @@
         block: |
           # export Claude key in the env variables
           export CLAUDE_CODE_USE_VERTEX=1
-          export CLOUD_ML_REGION=us-east5
+          export CLOUD_ML_REGION=global
           export ANTHROPIC_VERTEX_PROJECT_ID=itpc-gcp-prodsec-eng-claude
           # export Gemini key in the env variable
           export GEMINI_API_KEY="$(cat ~/data/keys/osoukup-gemini.txt)"
